@@ -1,0 +1,24 @@
+{
+  "name": "@tokenpact/orchestrator",
+  "version": "0.1.0",
+  "description": "Escrow lifecycle + x402 settlement coordinator.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "node --watch src/server.ts",
+    "start": "node src/server.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo \"(add eslint here)\" && exit 0",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@tokenpact/core": "workspace:*",
+    "@tokenpact/verifier": "workspace:*",
+    "express": "^4.19.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21"
+  }
+}

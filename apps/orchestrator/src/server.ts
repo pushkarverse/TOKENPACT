@@ -1,14 +1,10 @@
-// TokenPact HTTP server — zero external dependencies, Node built-ins only.
-// Serves the dashboard and a small JSON API that walks a reverse-escrow
-// transaction through its planes: task → escrow → provider → verify → settle.
-
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createTask, attachProvider, runVerification, getLedger, stats } from "./store.ts";
-import { buildSpec, SCENARIO_META } from "./scenarios.ts";
-import type { ProviderScenario } from "./types.ts";
+import { createTask, attachProvider, runVerification, getLedger, stats } from "./store.js";
+import { buildSpec, SCENARIO_META } from "@tokenpact/core";
+import type { ProviderScenario } from "@tokenpact/core";
 
 const PORT = Number(process.env.PORT) || 4021;
 const PUBLIC_DIR = fileURLToPath(new URL("../public/", import.meta.url));
@@ -90,14 +86,13 @@ const server = createServer(async (req, res) => {
       if (!["honest", "faulty", "slow"].includes(scenario)) {
         return sendJson(res, 400, { error: "scenario must be honest | faulty | slow" });
       }
-      const tx = attachProvider(produceMatch[1], scenario);
+      const tx = attachProvider(produceMatch[1] as string, scenario as ProviderScenario);
       return sendJson(res, 200, { transaction: tx });
     }
 
     const verifyMatch = path.match(/^\/api\/tasks\/([^/]+)\/verify$/);
     if (verifyMatch && method === "POST") {
-      // Verifier runs the sandbox; settlement releases or refunds.
-      const tx = runVerification(verifyMatch[1]);
+      const tx = runVerification(verifyMatch[1] as string);
       return sendJson(res, 200, { transaction: tx, stats: stats() });
     }
 
@@ -109,7 +104,6 @@ const server = createServer(async (req, res) => {
       return sendJson(res, 404, { error: "unknown endpoint" });
     }
 
-    // --- Static ------------------------------------------------------------
     return serveStatic(res, path);
   } catch (err: any) {
     return sendJson(res, 500, { error: String(err && err.message ? err.message : err) });

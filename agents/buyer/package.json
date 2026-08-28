@@ -1,0 +1,21 @@
+{
+  "name": "@tokenpact/agent-buyer",
+  "version": "0.1.0",
+  "description": "Example buyer agent: posts a task + spec and funds escrow over x402.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo \"(add eslint here)\" && exit 0",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@tokenpact/core": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0"
+  }
+}

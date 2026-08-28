@@ -1,16 +1,11 @@
-// In-memory state + orchestration. This is the "ledger" for the prototype.
-// A production build swaps this for a database and on-chain settlement, but the
-// state machine below — LOCKED → RELEASED | REFUNDED — is exactly the same.
-
-import type { Transaction, ProviderScenario } from "./types.ts";
-import { buildSpec, produce } from "./scenarios.ts";
-import { verify } from "./verifier/runner.ts";
-import { createOffer, settlementHash, ADDRESSES } from "./x402.ts";
+import type { Transaction, ProviderScenario } from "@tokenpact/core";
+import { buildSpec, produce } from "@tokenpact/core";
+import { verify } from "@tokenpact/verifier";
+import { createOffer, settlementHash, ADDRESSES } from "./x402.js";
 
 const transactions: Transaction[] = [];
-let counter = 1041; // first transaction becomes TP-1042
+let counter = 1041;
 
-/** Buyer agent: author the task, publish an x402 offer, lock funds in escrow. */
 export function createTask(): Transaction {
   const spec = buildSpec();
   const offer = createOffer(spec.priceCents, ADDRESSES.provider);
@@ -31,7 +26,6 @@ export function createTask(): Transaction {
   return tx;
 }
 
-/** Provider agent: produce an implementation for the chosen scenario. */
 export function attachProvider(txId: string, scenario: ProviderScenario): Transaction {
   const tx = getTx(txId);
   if (!tx) throw new Error(`unknown transaction ${txId}`);
@@ -40,7 +34,6 @@ export function attachProvider(txId: string, scenario: ProviderScenario): Transa
   return tx;
 }
 
-/** Verifier + settlement: run the sandbox, then release or refund. */
 export function runVerification(txId: string): Transaction {
   const tx = getTx(txId);
   if (!tx) throw new Error(`unknown transaction ${txId}`);

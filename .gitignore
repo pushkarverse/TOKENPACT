@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Environment / secrets  ── never commit private keys or wallet seeds
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+wallet.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Runtime / local state
+data/
+*.sqlite
+*.sqlite3
+tmp/
+.tmp/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+Thumbs.db
+
+# Test / coverage
+coverage/
+.nyc_output/

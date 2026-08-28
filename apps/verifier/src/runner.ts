@@ -11,7 +11,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
-import type { TaskSpec, ProviderOutput, VerificationResult, Check } from "./types.ts";
+import type { TaskSpec, ProviderOutput, VerificationResult, Check } from "@tokenpact/core";
 
 const VERIFIER_ID = "verifier.independent.agent";
 const VERIFIER_SECRET = "tokenpact-verifier-key-v1"; // demo signing key

@@ -1,167 +1,365 @@
-# TokenPact
+<div align="center">
 
-**Reverse escrow for autonomous AI agents.**
-Don't pay for promises. Pay for proof.
+# ⬡ TOKENPACT
 
-When one AI agent hires another, today's flow is *pay → receive → hope*. TokenPact
-inverts it. Money locks in escrow **before** work begins; an independent verifier
-machine-checks the output against a spec the buyer wrote; and the x402 payment rail
-releases funds **only on proof** — otherwise the buyer is automatically refunded.
+### Don't pay for promises. **Pay for proof.**
 
-```
-        today                         TokenPact
-   pay → receive → hope     REQUEST → PRODUCE → VERIFY → PAY
-                            (funds escrowed at REQUEST,
-                             released only if VERIFY passes)
-```
+Reverse escrow + quality-gated settlement for autonomous AI agents, built on [**x402**](https://x402.org).
 
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-22d3ee?style=for-the-badge)](./LICENSE)
+[![Node >=20](https://img.shields.io/badge/node-%3E%3D20-22d3ee?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![pnpm workspace](https://img.shields.io/badge/pnpm-workspace-22d3ee?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io)
+[![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-22d3ee?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Built on x402](https://img.shields.io/badge/built%20on-x402-8b5cf6?style=for-the-badge)](https://x402.org)
+[![Status: experimental](https://img.shields.io/badge/status-experimental-f59e0b?style=for-the-badge)](#roadmap)
 
-## Run it (one command, zero install)
+<samp>x402 × AI AGENTS × MACHINE-VERIFIABLE QUALITY</samp>
 
-Requires **Node.js ≥ 22.6** — nothing else. No `npm install`, no build step, no network.
-The server runs TypeScript directly using Node's built-in type stripping.
-
-```bash
-cd tokenpact
-npm start
-# → http://localhost:4021
-```
-
-Open the URL and click **Run the pact**.
-
-On Node 22.6–22.17, use `npm run start:compat` (adds the `--experimental-strip-types`
-flag). On Node ≥ 22.18 the plain `npm start` works because type stripping is on by
-default. To run on a different port: `PORT=5000 npm start`.
-
-Prefer the terminal? `npm run smoke` runs all three provider agents through the full
-flow and prints what the verifier decided.
+</div>
 
 ---
 
-## The demo (90 seconds)
-
-The buyer agent posts one task — **implement `isPrime(n)`** — with a machine-checkable
-acceptance condition:
-
-```
-accept_if:  compiles && tests_pass && p95 < 50ms && schema_match
-price:      $0.08   (escrowed up front)
+```text
+   TASK SPEC  →  ESCROW  →  OUTPUT  →  VERIFICATION  →  SETTLEMENT
+                                            │
+                                  PASS ──────┴────── FAIL
+                          release to provider     refund to buyer
 ```
 
-Pick which provider agent answers, then run the pact and watch the seal:
+**TokenPact** is an autonomous, quality-gated payment layer for AI agents. A buyer
+agent posts a task with a *machine-checkable* quality spec; the reward is locked
+in escrow over x402; a provider agent produces the output; an **independent
+verifier** runs the checks in a sandbox; and payment settles **only on proof** —
+released to the provider on PASS, refunded to the buyer on FAIL. No human reviews
+either outcome.
 
-| Provider   | What it does                                   | Verifier verdict            | Escrow outcome        |
-|------------|------------------------------------------------|-----------------------------|-----------------------|
-| **Honest** | √n trial division — correct and fast           | 12/12 tests · p95 ~0.1ms    | **RELEASED** → provider |
-| **Faulty** | "assume every odd number is prime"             | **7/12** tests fail         | **REFUNDED** → buyer  |
-| **Slow**   | correct but O(n) — clears tests, misses budget | 12/12 tests · **p95 ~150ms** | **REFUNDED** → buyer  |
+> Today, agents pay first and trust comes later. TokenPact flips it: the money
+> moves last, and only when the work is provably correct.
 
-The punchline: **the two failing providers fail for completely different reasons**
-(wrong answers vs. too slow), and the buyer pays for neither. The verifier ran their
-*actual code* — it didn't trust a claim. The Faulty case reproduces the exact 7/12 from
-the pitch deck.
+## Table of contents
 
-Every run appends a signed line to the settlement ledger, and the running tally shows
-how much was released on proof versus refunded on failure.
+- [The problem](#the-problem)
+- [The insight](#the-insight)
+- [What TokenPact does](#what-tokenpact-does)
+- [How verification works](#how-verification-works)
+- [Architecture](#architecture)
+- [Why x402](#why-x402)
+- [Quickstart](#quickstart)
+- [Repository layout](#repository-layout)
+- [API](#api)
+- [Configuration](#configuration)
+- [Roadmap](#roadmap)
+- [Tech stack](#tech-stack)
+- [Why this is different](#why-this-is-different)
+- [Contributing](#contributing)
+- [Security](#security)
+- [Team](#team)
+- [License](#license)
 
----
+## The problem
 
-## Why this is more than a mock
+AI agents are starting to buy services from other agents and APIs — and paying
+for them automatically. But **payment proves delivery, not quality.**
 
-The verification is **real**. When you run a pact, the verifier writes the provider's
-code to a sandbox and executes it in a **separate Node process with a hard timeout**,
-runs the unit tests, measures p95 latency against a large-prime probe, and checks the
-return schema. The Slow provider genuinely blows the latency budget because the probe
-input (`100000007`, a prime) forces its O(n) loop to run ~10⁸ iterations while the √n
-implementation clears it in microseconds. Nothing is faked — swap in your own buggy
-code and the verdict changes accordingly.
+- Bad outputs still get paid.
+- Agents can't reliably judge every service they buy.
+- Autonomous transactions need machine-verifiable trust, not vibes.
 
-What's **simulated** is only the settlement rail: instead of moving USDC on-chain, the
-x402 layer reproduces the same state transitions (`402 Payment Required` → escrow
-`LOCKED` → `RELEASED` | `REFUNDED`) in memory, so the whole flow runs at a hackathon
-demo without a wallet or testnet. See [Roadmap](#roadmap) for the real-x402 swap.
+An agent pays an API, gets an output back, and has no dependable way to answer
+the only question that matters: *is it actually correct?*
 
----
+## The insight
+
+The traditional flow is **pay → receive → hope.** The hope step doesn't scale to
+machines transacting thousands of times a second.
+
+> **What if payment were conditional?**
+
+Make the money contingent on a test the machine can run itself.
+
+## What TokenPact does
+
+TokenPact is **reverse escrow for AI agents**. Four roles, one loop:
+
+| # | Role | Does |
+| - | --- | --- |
+| 01 | **Buyer agent** | Creates the task + a machine-checkable quality spec |
+| 02 | **Provider** | Produces the output |
+| 03 | **Verifier agent** | Runs a machine-checkable evaluation in a sandbox |
+| 04 | **Settlement** | x402 releases funds on PASS, or returns them on FAIL |
+
+```
+PASS → release payment to provider        FAIL → reject · retry · dispute
+```
+
+The buyer funds escrow up front, but the provider is paid **only if** the
+verifier confirms the output meets the spec. Failed work isn't paid by default.
+
+## How verification works
+
+If it can't be checked by a machine, it can't gate a payment. A spec pairs a
+plain-language ask with a list of checks — and **all of them must pass**.
+
+```jsonc
+// examples/fibonacci/task.json
+{
+  "task": "Write a Python function fib(n) that returns the n-th Fibonacci number.",
+  "acceptIf": [
+    { "kind": "compiles" },
+    { "kind": "tests_pass",   "suite": "tests/", "minPassRatio": 1 },
+    { "kind": "latency",      "metric": "p95", "ltMs": 50 },
+    { "kind": "schema_match", "schema": { "type": "integer", "minimum": 0 } }
+  ],
+  "reward": { "amount": "0.25", "asset": "USDC", "network": "base-sepolia" }
+}
+```
+
+That's the predicate `compiles && tests_pass && p95 < 50ms && schema_match`,
+expressed as data the verifier executes deterministically:
+
+```text
+VERIFIER PIPELINE                RUNNING
+code compiles          ────────  ✓ ok
+unit tests             ────────  ✓ 18/18
+runtime threshold      ────────  ✓ p95 = 31ms
+output schema          ────────  ✓ match
+                                 ───────────────
+                                 PASS → payment released
+```
+
+Full details — every check kind, the verdict format, and how to add your own —
+live in [`docs/verification-spec.md`](./docs/verification-spec.md).
 
 ## Architecture
 
-Three planes, mirroring the pitch:
+TokenPact is organized into three planes. Data flows left to right; **money only
+moves at the end, and only on proof.**
 
-```
-  INTENT plane            EXECUTION plane              SETTLEMENT plane
-  ────────────            ───────────────              ────────────────
-  buyer agent             provider agent               verification result
-  task + accept_if        produces code                x402 release / refund
-  escrow LOCKED   ───▶    independent verifier   ───▶  signed ledger entry
-                          runs the REAL code
-                          (sandboxed child proc)
-```
+```mermaid
+sequenceDiagram
+    autonumber
+    participant B as Buyer agent
+    participant O as Orchestrator (escrow)
+    participant P as Provider agent
+    participant V as Verifier (sandbox)
 
-The verifier is the crux: **it is never paid by the provider**, and it executes the
-work rather than trusting any claim about it. Its verdict is signed.
-
-### Code map
-
-```
-src/
-  types.ts            shared domain vocabulary (one language for every plane)
-  scenarios.ts        the isPrime task spec + three real provider implementations
-  x402.ts             simulated x402 rail: 402 offer, escrow, settlement hash
-  verifier/
-    runner.ts         the verifier agent — spawns the sandbox, signs the verdict
-    harness.ts        runs INSIDE a child process: loads candidate code, runs
-                      tests, measures latency, checks schema (untrusted-code boundary)
-  store.ts            in-memory orchestration + the LOCKED → RELEASED|REFUNDED machine
-  server.ts           zero-dependency HTTP server + JSON API
-  util.ts             money formatting
-
-public/
-  index.html          the dashboard
-  styles.css          the "Vault" design system
-  app.js              flow orchestration + animated verifier receipt (vanilla JS)
-
-scripts/
-  smoke.ts            CLI walk-through of all three scenarios
+    B->>O: POST /tasks { spec }
+    O-->>B: 402 Payment Required (x402)
+    B->>O: retry + X-PAYMENT → lock escrow (FUNDED)
+    P->>O: POST /tasks/:id/output { artifact }
+    O->>V: verify(spec, output)
+    V->>V: compile · tests · latency · schema (sandboxed)
+    V-->>O: signed verdict { passed, results }
+    alt passed
+        O->>P: x402 release escrow → provider
+    else failed
+        O->>B: x402 refund escrow → buyer
+    end
 ```
 
-### API
+**Key invariant:** the **verifier is never paid by the provider.** The party
+judging the work has no stake in passing bad output — that's what makes the
+verdict trustworthy. See [`docs/architecture.md`](./docs/architecture.md) for the
+three-plane model, the escrow state machine, and the settlement design.
 
-| Method | Route                        | Purpose                                            |
-|--------|------------------------------|----------------------------------------------------|
-| GET    | `/api/state`                 | task spec, provider catalog, ledger, running tally |
-| POST   | `/api/tasks`                 | buyer authors task → funds lock in escrow          |
-| POST   | `/api/tasks/:id/produce`     | provider produces code (`{scenario}`)              |
-| POST   | `/api/tasks/:id/verify`      | verifier runs sandbox → release or refund          |
-| GET    | `/api/ledger`                | settled transactions + tally                       |
+## Why x402
 
----
+[x402](https://x402.org) is an open protocol that puts payment directly on the
+HTTP request path using the `402 Payment Required` status code. A server replies
+`402` with machine-readable payment requirements; the agent pays a stablecoin
+micropayment (e.g. USDC on Base) and retries with an `X-PAYMENT` header; a
+**facilitator** verifies and settles it.
 
-## Design notes
+That's exactly the rail agents need — **no cards, no invoices, no human in the
+loop.** Agents pay per request, in cents, without accounts. TokenPact adds the
+missing half: rather than settling on the spot, it holds the payment in escrow
+and settles **conditionally**, after the verifier signs off.
 
-Zero runtime dependencies — everything is Node built-ins and hand-written CSS/JS. That's
-a deliberate choice: the demo starts with one command, can't break on a failed install,
-and needs no network. It also keeps the trust story clean — there's no third-party code
-between you and the verifier.
+## Quickstart
 
-The interface is a custom "Vault" visual language (warm charcoal, gold foil, monospace
-ledgers) rather than a stock dashboard theme.
+### Prerequisites
 
----
+- **Node.js ≥ 20**
+- **pnpm ≥ 9** — `corepack enable && corepack prepare pnpm@latest --activate`
+- **Docker** (the verifier executes untrusted output in a sandbox)
+- A testnet wallet + a little Base-Sepolia USDC for the payment path *(optional
+  for the mock demo)*
+
+### Install & run
+
+```bash
+# 1. Clone and install the workspace
+git clone https://github.com/<your-org>/tokenpact.git
+cd tokenpact
+pnpm install
+
+# 2. Configure — copy the template and fill in testnet values
+cp .env.example .env
+
+# 3. Build everything
+pnpm build
+
+# 4. Start the services (separate terminals)
+pnpm --filter @tokenpact/orchestrator dev   # escrow + settlement  :8402
+pnpm --filter @tokenpact/verifier dev        # sandboxed verifier   :8403
+
+# 5. Run the end-to-end demo — an agent hires an agent to write fib(n)
+pnpm demo
+```
+
+Break the solution or blow the latency budget and the task settles as
+**REFUNDED** — the provider gets `$0`. That's the whole point.
+
+> **Note:** this is a hackathon scaffold. The escrow state machine, task-spec
+> schema, HTTP surface, and demo flow are wired end to end; the x402 settlement
+> calls and the sandbox runner are marked with clearly-labelled `TODO`s where you
+> plug in the SDKs. See the [roadmap](#roadmap).
+
+## Repository layout
+
+```
+tokenpact/
+├── apps/
+│   ├── orchestrator/     # Escrow lifecycle + x402 settlement coordinator (API)
+│   └── verifier/         # Sandboxed verification service (compile·tests·schema)
+├── agents/
+│   ├── buyer/            # Example buyer agent (posts task + funds escrow)
+│   └── provider/         # Example provider agent (produces the output)
+├── packages/
+│   └── core/             # Shared types, task-spec schema, escrow state machine
+├── examples/
+│   └── fibonacci/        # The end-to-end demo from the pitch
+├── docs/                 # Architecture + verification spec
+└── .github/              # CI + templates
+```
+
+Managed as a **pnpm workspace**. Shared code lives in `@tokenpact/core` and is
+consumed via `workspace:*`.
+
+## API
+
+**Orchestrator** (`:8402`)
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET`  | `/healthz` | Liveness check |
+| `POST` | `/tasks` | Publish a task + spec; funds escrow via the x402 402-handshake |
+| `GET`  | `/tasks/:id` | Inspect a task's escrow state + record |
+| `POST` | `/tasks/:id/output` | Provider submits an output artifact → triggers verification |
+| `POST` | `/tasks/:id/verification` | Verifier posts a signed verdict → settlement |
+
+**Verifier** (`:8403`)
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET`  | `/healthz` | Liveness check |
+| `POST` | `/verify` | Body `{ spec, output }` → signed `VerificationResult` |
+
+## Configuration
+
+Set via `.env` (see [`.env.example`](./.env.example) for the full list):
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `ORCHESTRATOR_PORT` | `8402` | Orchestrator HTTP port |
+| `VERIFIER_PORT` | `8403` | Verifier HTTP port |
+| `SANDBOX_DRIVER` | `docker` | Isolation backend: `docker` \| `firecracker` \| `none` |
+| `SANDBOX_TIMEOUT_MS` | `10000` | Hard wall-clock limit per verification run |
+| `X402_NETWORK` | `base-sepolia` | Settlement network: `base-sepolia` \| `base` |
+| `X402_FACILITATOR_URL` | `https://x402.org/facilitator` | Verifies + settles x402 payments |
+| `X402_ASSET` | `USDC` | Settlement asset |
+| `BUYER_PRIVATE_KEY` | — | Funds escrow *(testnet/burner keys only)* |
+| `DATABASE_URL` | `file:./data/tokenpact.sqlite` | Transaction log |
+
+> ⚠️ Use **testnet keys and burner wallets** in development. Never commit a real
+> `.env`; it's already git-ignored.
 
 ## Roadmap
 
-- **Real x402 settlement** — replace `src/x402.ts` with a live x402 facilitator so escrow
-  release moves USDC on Base. The state machine in `store.ts` is already shaped for it.
-- **Pluggable verifiers** — today the verifier runs unit tests, latency, and schema.
-  The `Check` type is generic; add checks for output diffing, property-based tests, or
-  LLM-graded rubrics for non-code tasks.
-- **Multi-language sandboxes** — the harness boundary is process-isolated; a container
-  runner would let providers answer in any language.
-- **Verifier staking / reputation** — make verifier independence economically enforced,
-  not just architectural.
+**Running today**
+
+- [x] Task-spec schema with a typed, extensible acceptance-check model
+- [x] Escrow state machine with settlement-safe transitions
+- [x] Orchestrator API for the full task lifecycle
+- [x] Verifier pipeline structure (compile · tests · latency · schema)
+- [x] End-to-end demo flow (buyer → provider → verifier → settlement)
+
+**Prototype / planned**
+
+- [ ] Live x402 settlement (release / refund) through a facilitator
+- [ ] Dockerized sandbox runner with enforced CPU/memory/network limits
+- [ ] Signed verifier attestations + signature verification at the boundary
+- [ ] On-chain escrow contract + on-chain transaction log
+- [ ] Multiple independent verifiers (quorum / staking)
+- [ ] **Metered access** — the same primitives as an API *tollbooth* (see below)
+
+### Second surface — the tollbooth
+
+The same escrow + metering + settlement machinery can gate any expensive
+downstream API: charge per call, settle x402 micropayments automatically, track
+usage, and enforce per-agent budgets. **One payment layer, two agent economies.**
+
+## Tech stack
+
+| Layer | Today | Prototype / planned |
+| --- | --- | --- |
+| **Agent** | TypeScript agents, HTTP APIs, backend API | — |
+| **Verification** | Sandboxed runner, automated tests, schema checks | Hardened isolation |
+| **Payments** | x402, wallet layer | On-chain escrow contract |
+| **State** | Transaction-log DB (SQLite) | On-chain settlement + indexer |
+
+Runtime: **Node.js 20 + TypeScript (strict)**, **pnpm** workspaces, **Express**,
+**zod**. Payments via the **x402** SDKs.
+
+## Why this is different
+
+TokenPact is **not another AI agent.** A generic agent generates output, calls
+tools, and uses APIs. TokenPact is the **infrastructure** underneath an economy
+where those agents transact:
+
+- Agents hire agents — and payments settle automatically.
+- Outputs are machine-verified, so failed work isn't paid by default.
+- Usage can be metered, and transactions run unsupervised.
+
+It's plumbing for an economy where AI agents buy and sell services **without a
+human approving every payment.**
+
+## Contributing
+
+Contributions, issues, and ideas are welcome — see
+[`CONTRIBUTING.md`](./CONTRIBUTING.md) and our
+[`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md). In short:
+
+```bash
+pnpm install
+pnpm typecheck && pnpm lint && pnpm test
+```
+
+Branch from `main`, keep PRs focused, and use
+[Conventional Commits](https://www.conventionalcommits.org/).
+
+## Security
+
+TokenPact moves money and runs untrusted code. Please read
+[`SECURITY.md`](./SECURITY.md) before touching the payment or verifier paths.
+Never commit secrets; always run the verifier inside a sandbox; the verifier is
+never funded by the provider.
+
+## Team
+
+**Team TechCrunch**
+
+- **Anwesha Mondal**
+- **Dev Krrish Sinha**
+- **Pushkar Kumar**
+
+## License
+
+[MIT](./LICENSE) © 2026 TokenPact — Team TechCrunch.
 
 ---
 
-**Team TechCrunch** — Anwesha Mondal · Dev Krrish Sinha · Pushkar Kumar
-Prototype for round 2. MIT licensed.
+<div align="center">
+<sub><strong>REVERSE ESCROW × x402 × AUTONOMOUS AGENTS</strong></sub><br>
+<sub>Don't pay for promises. Pay for proof.</sub>
+</div>
