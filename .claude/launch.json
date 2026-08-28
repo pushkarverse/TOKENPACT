@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "autoPort": true,
+  "configurations": [
+    {
+      "name": "tokenpact",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start"],
+      "port": 4056
+    }
+  ]
+}

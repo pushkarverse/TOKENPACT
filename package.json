@@ -1,0 +1,25 @@
+{
+  "name": "tokenpact",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TokenPact — reverse escrow for autonomous AI agents. Payment is held in escrow and released only when the provider's output passes a machine-verifiable spec.",
+  "engines": {
+    "node": ">=22.6"
+  },
+  "scripts": {
+    "start": "node src/server.ts",
+    "start:compat": "node --experimental-strip-types src/server.ts",
+    "dev": "node --watch src/server.ts",
+    "smoke": "node scripts/smoke.ts"
+  },
+  "keywords": [
+    "x402",
+    "ai-agents",
+    "escrow",
+    "verification",
+    "agent-economy"
+  ],
+  "author": "Team TechCrunch — Anwesha Mondal, Dev Krrish Sinha, Pushkar Kumar",
+  "license": "MIT"
+}

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TokenPact — reverse escrow for AI agents</title>
+<meta name="description" content="Don't pay for promises. Pay for proof. Quality-gated escrow settlement for autonomous AI agents, on the x402 rail." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;450;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ===================== Masthead ===================== -->
+  <header class="masthead">
+    <div class="brand">
+      <span class="brand-seal" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="28" height="28">
+          <circle cx="16" cy="16" r="14.2" class="bs-ring" />
+          <circle cx="16" cy="16" r="10.4" class="bs-ring bs-ring-in" />
+          <path d="M12.4 16.2 l2.6 2.9 l4.8 -6.6" class="bs-tick" />
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1>TokenPact</h1>
+        <p>Reverse escrow for autonomous AI agents</p>
+      </div>
+    </div>
+
+    <div class="tally" id="tally" aria-label="Settlement tally">
+      <div class="tally-item">
+        <span class="tally-num" id="tally-released">$0.00</span>
+        <span class="tally-cap">released on proof</span>
+      </div>
+      <div class="tally-sep" aria-hidden="true"></div>
+      <div class="tally-item">
+        <span class="tally-num" id="tally-protected">$0.00</span>
+        <span class="tally-cap">refunded on failure</span>
+      </div>
+      <div class="tally-sep" aria-hidden="true"></div>
+      <div class="tally-item">
+        <span class="tally-num" id="tally-settled">0</span>
+        <span class="tally-cap">pacts settled</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- The thesis line -->
+  <p class="thesis">
+    Funds lock <em>before</em> work begins. An independent verifier machine-checks the output against its spec.
+    The x402 rail releases payment only on&nbsp;proof — otherwise the buyer is refunded.
+    <span class="thesis-mark">Don't pay for promises. Pay for proof.</span>
+  </p>
+
+  <!-- ===================== Working area ===================== -->
+  <main class="grid">
+
+    <!-- ---------- Left rail: the pact + providers ---------- -->
+    <section class="col-left">
+
+      <!-- The Pact -->
+      <article class="card card-pact">
+        <div class="card-head">
+          <span class="eyebrow">The pact · intent plane</span>
+          <span class="chip chip-price" id="pact-price">$0.08</span>
+        </div>
+        <h2 class="pact-title" id="pact-title">Primality check</h2>
+        <p class="pact-task" id="pact-task">Implement isPrime(n): return true iff n is a prime number.</p>
+
+        <div class="accept">
+          <span class="accept-label">accept_if</span>
+          <code class="accept-expr" id="pact-accept">compiles &amp;&amp; tests_pass &amp;&amp; p95 &lt; 50ms &amp;&amp; schema_match</code>
+        </div>
+        <p class="pact-foot">
+          Authored by the <strong>buyer agent</strong>. The condition is machine-checkable — no human sign-off, no trust in a claim.
+        </p>
+      </article>
+
+      <!-- Providers -->
+      <article class="card card-providers">
+        <div class="card-head">
+          <span class="eyebrow">Choose a provider · execution plane</span>
+        </div>
+        <div class="providers" id="providers" role="radiogroup" aria-label="Provider agent">
+          <!-- provider options injected by app.js -->
+        </div>
+
+        <button class="run" id="run" type="button">
+          <span class="run-label">Run the pact</span>
+          <span class="run-sub">lock&nbsp;escrow → produce → verify → settle</span>
+        </button>
+      </article>
+
+    </section>
+
+    <!-- ---------- Right: the vault (hero) ---------- -->
+    <section class="col-vault">
+      <article class="card vault" id="vault">
+
+        <div class="vault-head">
+          <div class="vault-id">
+            <span class="eyebrow">Escrow</span>
+            <span class="tx-id" id="tx-id">— — — —</span>
+          </div>
+          <span class="state-chip state-idle" id="escrow-chip" aria-live="polite">Awaiting pact</span>
+        </div>
+
+        <!-- Plane stepper -->
+        <ol class="stepper" id="stepper" aria-label="Progress">
+          <li data-step="intent"><span class="step-dot"></span>Intent</li>
+          <li data-step="execution"><span class="step-dot"></span>Execution</li>
+          <li data-step="settlement"><span class="step-dot"></span>Settlement</li>
+        </ol>
+
+        <!-- The seal -->
+        <div class="seal-stage">
+          <svg class="seal" id="seal" viewBox="0 0 240 240" data-state="idle" role="img" aria-label="Escrow seal">
+            <defs>
+              <path id="sealArcTop" d="M120,120 m-88,0 a88,88 0 1,1 176,0" />
+              <path id="sealArcBot" d="M120,120 m88,0 a88,88 0 1,1 -176,0" />
+              <radialGradient id="sealFace" cx="50%" cy="42%" r="62%">
+                <stop offset="0%" stop-color="#241f17" />
+                <stop offset="100%" stop-color="#191510" />
+              </radialGradient>
+              <radialGradient id="sealGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"   stop-color="rgba(216,162,74,0)" />
+                <stop offset="70%"  stop-color="rgba(216,162,74,0)" />
+                <stop offset="90%"  stop-color="rgba(216,162,74,0.55)" />
+                <stop offset="100%" stop-color="rgba(216,162,74,0)" />
+              </radialGradient>
+            </defs>
+
+            <!-- breathing gold halo — sits behind the disc -->
+            <circle cx="120" cy="120" r="120" class="seal-glow" fill="url(#sealGlow)" aria-hidden="true" />
+
+            <circle cx="120" cy="120" r="116" class="seal-rim" />
+            <circle cx="120" cy="120" r="104" class="seal-face" fill="url(#sealFace)" />
+            <circle cx="120" cy="120" r="100" class="seal-ring seal-ring-hair" />
+
+            <!-- outer orbit — engraved legend, clockwise -->
+            <g class="seal-orbit seal-orbit--cw">
+              <text class="seal-engrave">
+                <textPath href="#sealArcTop" startOffset="50%" text-anchor="middle">TOKENPACT · REVERSE ESCROW</textPath>
+              </text>
+              <text class="seal-engrave">
+                <textPath href="#sealArcBot" startOffset="50%" text-anchor="middle">x402 · QUALITY-GATED SETTLEMENT</textPath>
+              </text>
+            </g>
+
+            <!-- outer trace — live highlight sweeping the rim, clockwise -->
+            <g class="seal-trace seal-trace--out" aria-hidden="true">
+              <circle cx="120" cy="120" r="100" class="seal-trace-arc" pathLength="360" />
+            </g>
+
+            <circle cx="120" cy="120" r="80" class="seal-ring" />
+
+            <!-- inner dial — fine ticks, counter-clockwise -->
+            <g class="seal-orbit seal-orbit--ccw" aria-hidden="true">
+              <circle cx="120" cy="120" r="70" class="seal-ticks" pathLength="360" />
+            </g>
+
+            <circle cx="120" cy="120" r="60" class="seal-ring seal-ring-core" />
+
+            <!-- inner trace — live highlight on the core, counter-clockwise -->
+            <g class="seal-trace seal-trace--in" aria-hidden="true">
+              <circle cx="120" cy="120" r="60" class="seal-trace-arc seal-trace-arc--in" pathLength="360" />
+            </g>
+
+            <!-- state glyphs -->
+            <g class="glyph glyph-lock">
+              <path class="g-stroke" d="M108,104 v-8 a12,12 0 0 1 24,0 v8" />
+              <rect class="g-fill" x="103" y="104" width="34" height="27" rx="5" />
+              <circle class="g-punch" cx="120" cy="114" r="3" />
+              <rect class="g-punch" x="118.6" y="114" width="2.8" height="8" rx="1.4" />
+            </g>
+            <g class="glyph glyph-check">
+              <path class="g-stroke g-stroke-bold" d="M104,117 l10,11 l22,-27" />
+            </g>
+            <g class="glyph glyph-refund">
+              <path class="g-stroke g-stroke-bold" d="M118,99 l-12,10 l12,10" />
+              <path class="g-stroke g-stroke-bold" d="M106,109 h15 a14,14 0 0 1 0,28 h-2" />
+            </g>
+
+            <text class="seal-amount" id="seal-amount" x="120" y="152">$0.08</text>
+            <text class="seal-state" id="seal-state" x="120" y="172">READY</text>
+          </svg>
+        </div>
+
+        <!-- x402 offer line -->
+        <div class="wire" id="offer-wire" hidden>
+          <span class="wire-tag">402</span>
+          <span class="wire-body" id="offer-body">Payment Required</span>
+        </div>
+
+        <!-- Provider output -->
+        <div class="provider-out" id="provider-out" hidden>
+          <div class="po-line">
+            <span class="eyebrow">Provider output</span>
+            <button class="peek" id="peek" type="button" aria-expanded="false">view code</button>
+          </div>
+          <div class="po-meta">
+            <span class="po-id" id="po-id">provider.agent</span>
+            <span class="po-hash" id="po-hash">commit ————</span>
+          </div>
+          <p class="po-headline" id="po-headline"></p>
+          <pre class="po-code" id="po-code" hidden></pre>
+        </div>
+
+        <!-- Verifier receipt -->
+        <div class="receipt" id="receipt" hidden>
+          <div class="receipt-head">
+            <span class="eyebrow">Verifier receipt</span>
+            <span class="receipt-who">independent · never paid by provider</span>
+          </div>
+          <ul class="checks" id="checks" aria-live="polite"></ul>
+          <div class="receipt-foot" id="receipt-foot" hidden>
+            <span class="sig-label">signed</span>
+            <span class="sig-val" id="sig-val">—</span>
+          </div>
+        </div>
+
+        <!-- Settlement -->
+        <div class="settlement" id="settlement" hidden>
+          <span class="settle-verdict" id="settle-verdict">—</span>
+          <span class="settle-tx" id="settle-tx">0x—</span>
+        </div>
+
+      </article>
+    </section>
+
+    <!-- ---------- Ledger (full width) ---------- -->
+    <section class="col-ledger">
+      <article class="card card-ledger">
+        <div class="card-head">
+          <span class="eyebrow">Settlement ledger · settlement plane</span>
+          <span class="ledger-note">every outcome, signed and recorded</span>
+        </div>
+        <div class="ledger" id="ledger">
+          <div class="ledger-empty" id="ledger-empty">No pacts settled yet — run one to write the first line.</div>
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <footer class="footjust">
+    <span>Verification is real — the sandbox executes the provider's actual code.</span>
+    <span class="dot" aria-hidden="true">·</span>
+    <span>x402 settlement is simulated for this prototype.</span>
+    <span class="dot" aria-hidden="true">·</span>
+    <span class="foot-brand">TokenPact — Team TechCrunch</span>
+  </footer>
+
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
