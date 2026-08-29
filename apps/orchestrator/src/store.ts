@@ -46,8 +46,19 @@ function saveLedger() {
     console.error("Failed to save ledger DB:", err);
   }
 }
-
 loadLedger();
+
+export function resetLedger() {
+  transactions = [];
+  usedPaymentIds.clear();
+  balances = { escrowHeld: 0, providerEarned: 0, buyerRefunded: 0, grossVolume: 0 };
+  counter = 1041;
+  tollboothCount = 0;
+  tollboothVolume = 0;
+  if (fs.existsSync(LEDGER_PATH)) {
+    fs.unlinkSync(LEDGER_PATH);
+  }
+}
 
 export function createTask(): Transaction {
   const spec = buildSpec();

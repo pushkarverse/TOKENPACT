@@ -1,11 +1,11 @@
 
-
 import {
   createTask,
   fundEscrow,
   attachProvider,
   runVerification,
   getBalances,
+  resetLedger,
 } from "../src/store.js";
 import {
   createWallet,
@@ -47,6 +47,8 @@ function throws(label: string, fn: () => unknown, expectMatch?: string) {
 }
 
 ;(async () => {
+resetLedger();
+
 console.log("\n· x402 payment integrity");
 {
   const escrow = createWallet("test.escrow");
