@@ -1,5 +1,6 @@
 <div align="center">
 
+![TokenPact Logo](./assets/logo.png)
 # ⬡ TOKENPACT
 
 ### Don't pay for promises. **Pay for proof.**
@@ -210,32 +211,35 @@ two different ways — is the end-to-end smoke run. **Zero install:**
 git clone https://github.com/<your-org>/tokenpact.git
 cd tokenpact
 
-# One-shot proof: authors a task, pays the x402 offer, produces + verifies each
-# provider, and asserts the settlement. Runs honest → RELEASED, faulty → REFUND,
-# slow → REFUND, then reconciles the ledger.
-node --import ./tools/ts-run.mjs apps/orchestrator/scripts/smoke.ts
+npm install -g .
+
+tokenpact smoke
 ```
 
 To drive it through the live HTTP surface + dashboard instead, start the
 orchestrator and open the browser demo:
 
 ```bash
-# 1. Start the escrow + settlement server (serves the dashboard too)
-node --import ./tools/ts-run.mjs apps/orchestrator/src/server.ts
-#    → open http://localhost:8402 and click "Run the pact" for each provider
-
-# 2. (optional) drive it from the CLI agents, in two more terminals
-node --import ./tools/ts-run.mjs agents/buyer/src/index.ts       # authors + pays
-node --import ./tools/ts-run.mjs agents/provider/src/index.ts honest   # honest | faulty | slow
+tokenpact server
+tokenpact buyer               
+tokenpact provider honest     
 ```
 
-With **pnpm**, the same commands are wrapped as script aliases:
+With our **Global CLI**, starting the entire ecosystem is just one command away:
 
 ```bash
-pnpm demo         # the one-shot smoke proof (no server needed)
-pnpm demo:server  # escrow + settlement server + dashboard on :8402
-pnpm demo:buyer   # buyer agent: authors a task and pays the x402 offer
-pnpm demo:provider honest   # provider agent: honest | faulty | slow
+npm install -g @tokenpact/cli
+
+tokenpact
+```
+This automatically boots up the Orchestrator (on port 8402) and spawns the Buyer and Provider agents simultaneously. 
+
+You can also run specific components:
+```bash
+tokenpact smoke
+tokenpact server             
+tokenpact buyer             
+tokenpact provider honest   
 ```
 
 Choose the **faulty** or **slow** provider and the task settles as **REFUNDED** —
