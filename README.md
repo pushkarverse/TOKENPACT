@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1><img src="./assets/logo.png" width="45" style="vertical-align: middle;" /> TOKENPACT</h1>
+<h1><img src="./assets/logo.png" width="60" style="vertical-align: middle;" /> TOKENPACT</h1>
 
 ### Don't pay for promises. **Pay for proof.**
 
