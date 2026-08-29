@@ -1,16 +1,9 @@
-// TokenPact — shared domain types.
-// One vocabulary used by the buyer agent, the provider agent, the verifier,
-// and the settlement layer, so every plane of the system speaks the same language.
-
-/** A quantity of money, always stored in integer cents to avoid float drift. */
 export type Money = { cents: number };
 
-/** Escrow lifecycle. Funds are LOCKED at task creation and end RELEASED or REFUNDED. */
-export type EscrowState = "LOCKED" | "RELEASED" | "REFUNDED";
+export type EscrowState = "AWAITING_PAYMENT" | "LOCKED" | "RELEASED" | "REFUNDED";
 
 export type CheckStatus = "pending" | "pass" | "fail";
 
-/** One line in the verifier's receipt. */
 export type Check = {
   id: "compiles" | "tests" | "latency" | "schema";
   label: string;
@@ -18,26 +11,22 @@ export type Check = {
   status: CheckStatus;
 };
 
-/** The machine-checkable acceptance condition — the deck's `accept_if`. */
 export type AcceptIf = {
   compiles: boolean;
   testsMustAllPass: boolean;
   p95BudgetMs: number;
-  schema: string; // expected typeof the return value, e.g. "boolean"
-  humanExpr: string; // e.g. "compiles && tests_pass && p95 < 50ms && schema_match"
+  schema: string;
+  humanExpr: string;
 };
 
-export type TestCase = { input: unknown[]; expected: unknown };
+export type TestCase = { input: string; expected: string };
 
-/** The task + quality spec authored by the buyer agent. */
 export type TaskSpec = {
   id: string;
   title: string;
-  task: string; // natural-language instruction
-  fn: string; // required function name, e.g. "isPrime"
-  language: "javascript";
+  task: string;
+  language?: string;
   tests: TestCase[];
-  latencyProbe: { input: unknown[]; iterations: number };
   acceptIf: AcceptIf;
   priceCents: number;
   createdAt: number;
@@ -45,17 +34,15 @@ export type TaskSpec = {
 
 export type ProviderScenario = "honest" | "faulty" | "slow";
 
-/** What a provider agent returns: an implementation plus signed provenance. */
 export type ProviderOutput = {
   provider: string;
   scenario: ProviderScenario;
-  headline: string; // one-line description of this provider's behaviour
-  code: string; // the implementation source
+  language: string;
+  headline: string;
+  code: string;
   commitHash: string;
   producedAt: number;
 };
-
-/** The verifier's signed verdict over a provider's output. */
 export type VerificationResult = {
   checks: Check[];
   compiled: boolean;
@@ -69,35 +56,79 @@ export type VerificationResult = {
   timedOut: boolean;
   passed: boolean;
   verifier: string;
-  signature: string; // verifier signs the result; it is never paid by the provider
+  signature: string;
   ranAt: number;
   durationMs: number;
 };
 
-/** An x402-style "402 Payment Required" offer (simulated rail). */
 export type X402Offer = {
   status: 402;
+  x402Version: number;
   paymentId: string;
   scheme: "exact";
   amountCents: number;
-  asset: string; // "USDC"
-  network: string; // "base-sepolia (simulated)"
+  asset: string;
+  network: string;
   payTo: string;
   nonce: string;
+  resource: string;
   description: string;
+  validUntil: number;
 };
 
-/** A single reverse-escrow transaction, from task creation through settlement. */
+export type PaymentAuthorization = {
+  from: string;
+  to: string;
+  valueCents: number;
+  asset: string;
+  network: string;
+  nonce: string;
+  validAfter: number;
+  validBefore: number;
+};
+
+export type PaymentPayload = {
+  x402Version: number;
+  paymentId: string;
+  scheme: "exact";
+  network: string;
+  authorization: PaymentAuthorization;
+  publicKey: string;
+  signature: string;
+};
+
+export type SettlementReceipt = {
+  settlementTx: string;
+  network: string;
+  direction: "provider" | "buyer";
+  amountCents: number;
+  from: string;
+  to: string;
+  asset: string;
+  reason: string;
+  settledAt: number;
+};
+
+export type Balances = {
+  escrowHeld: number;
+  providerEarned: number;
+  buyerRefunded: number;
+  grossVolume: number;
+};
+
 export type Transaction = {
-  id: string; // "TP-1042"
+  id: string;
   spec: TaskSpec;
   provider: ProviderOutput | null;
   offer: X402Offer | null;
+  payment: PaymentPayload | null;
   escrow: EscrowState;
   verification: VerificationResult | null;
+  receipt: SettlementReceipt | null;
   amountCents: number;
   settlementTx: string | null;
   payoutTo: "provider" | "buyer" | null;
   createdAt: number;
+  fundedAt: number | null;
   settledAt: number | null;
 };

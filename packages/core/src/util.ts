@@ -1,5 +1,5 @@
-// Small formatting helpers shared by server and (serialized) client.
-import type { Money } from "./types.ts";
+
+import type { Money } from "./types.js";
 
 export function fmtMoney(m: Money): string {
   return `$${(m.cents / 100).toFixed(2)}`;

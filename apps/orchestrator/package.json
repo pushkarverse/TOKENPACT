@@ -6,11 +6,12 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "dev": "node --watch src/server.ts",
-    "start": "node src/server.ts",
+    "dev": "node --watch --import ../../tools/ts-run.mjs src/server.ts",
+    "start": "node --import ../../tools/ts-run.mjs src/server.ts",
+    "smoke": "node --import ../../tools/ts-run.mjs scripts/smoke.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo \"(add eslint here)\" && exit 0",
-    "test": "node --test"
+    "test": "node --import ../../tools/ts-run.mjs scripts/smoke.ts"
   },
   "dependencies": {
     "@tokenpact/core": "workspace:*",

@@ -1,15 +1,10 @@
-/* =====================================================================
-   TokenPact dashboard — vanilla JS, no framework.
-   Walks a reverse-escrow transaction through its planes and animates the
-   verifier receipt + escrow seal over the *real* API results.
-   ===================================================================== */
+
 
 "use strict";
 
 const $ = (id) => document.getElementById(id);
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-/* real timings from the API drive the flow; these are just reveal beats */
 const beat = (ms) => new Promise((r) => setTimeout(r, REDUCED ? 0 : ms));
 
 const state = {
@@ -20,7 +15,6 @@ const state = {
   running: false,
 };
 
-/* ---- money / text helpers ------------------------------------------ */
 const usd = (cents) => "$" + (Number(cents || 0) / 100).toFixed(2);
 
 const CHECK_ORDER = ["compiles", "tests", "latency", "schema"];
@@ -31,7 +25,6 @@ const PENDING_LABELS = {
   schema: { label: "Output schema", detail: "pending" },
 };
 
-/* ---- API ------------------------------------------------------------ */
 async function api(path, opts) {
   const res = await fetch(path, opts);
   const body = await res.json().catch(() => ({}));
@@ -45,7 +38,15 @@ const jpost = (path, data) =>
     body: data ? JSON.stringify(data) : undefined,
   });
 
-/* ---- boot ----------------------------------------------------------- */
+async function requestTask() {
+  const res = await fetch("/api/tasks", { method: "POST" });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok && res.status !== 402) {
+    throw new Error(body && body.error ? body.error : `${res.status} ${res.statusText}`);
+  }
+  return body; 
+}
+
 async function boot() {
   try {
     const s = await api("/api/state");
@@ -67,7 +68,6 @@ async function boot() {
   $("peek").addEventListener("click", toggleCode);
 }
 
-/* ---- static render -------------------------------------------------- */
 function renderSpec(spec) {
   if (!spec) return;
   $("pact-title").textContent = spec.title;
@@ -116,8 +116,6 @@ function renderTally(stats) {
   $("tally-settled").textContent = String(stats.settled);
 }
 
-/* pre-populate the receipt with the four pending checks so the hero
-   surface reads before anything runs */
 function primeReceipt(spec) {
   const ul = $("checks");
   ul.innerHTML = "";
@@ -148,7 +146,6 @@ function checkRow(id, label, detail, status, shown) {
   return li;
 }
 
-/* ---- the main flow -------------------------------------------------- */
 async function runPact() {
   if (state.running) return;
   state.running = true;
@@ -158,17 +155,24 @@ async function runPact() {
   const scenario = state.selected;
 
   try {
-    /* 1 · INTENT — buyer authors the task, funds lock in escrow */
+    
     setStep("intent", "active");
-    const created = (await jpost("/api/tasks")).transaction;
+    const gate = await requestTask();
+    const created = gate.transaction;
+    const offer = gate.offer || (gate.accepts && gate.accepts[0]);
     $("tx-id").textContent = created.id;
-    setSeal("held", created.amountCents, "in escrow");
+    showOffer(offer);
+    setChip("idle", "402 · payment required");
+    setSeal("idle", offer ? offer.amountCents : created.amountCents, "402");
+    await beat(680);
+
+    const funded = (await jpost(`/api/tasks/${created.id}/pay`)).transaction;
+    markOfferPaid(funded);
+    setSeal("held", funded.amountCents, "in escrow");
     setChip("held", "Held in escrow");
-    showOffer(created.offer);
-    await beat(620);
+    await beat(560);
     setStep("intent", "done");
 
-    /* 2 · EXECUTION — provider produces, verifier runs the real code */
     setStep("execution", "active");
     const produced = (await jpost(`/api/tasks/${created.id}/produce`, { scenario })).transaction;
     showProvider(produced.provider);
@@ -179,20 +183,17 @@ async function runPact() {
     const tx = verified.transaction;
     const v = tx.verification;
 
-    /* print each check in order, using the real verdicts */
     for (const id of CHECK_ORDER) {
       const c = v.checks.find((x) => x.id === id);
       if (c) await revealCheck(c);
       await beat(300);
     }
 
-    /* signature */
     $("sig-val").textContent = v.signature;
     $("receipt-foot").hidden = false;
     await beat(260);
     setStep("execution", "done");
 
-    /* 3 · SETTLEMENT — release on proof, refund on failure */
     setStep("settlement", "active");
     const released = tx.escrow === "RELEASED";
     stampSeal(released, tx.amountCents);
@@ -200,7 +201,6 @@ async function runPact() {
     showSettlement(tx);
     setStep("settlement", "done");
 
-    /* record */
     renderTally(verified.stats);
     state.ledger.unshift(tx);
     renderLedger(state.ledger, tx.id);
@@ -214,10 +214,11 @@ async function runPact() {
   }
 }
 
-/* ---- vault view helpers -------------------------------------------- */
 function resetVault() {
   setStep(null, null);
   $("offer-wire").hidden = true;
+  const tag = document.querySelector("#offer-wire .wire-tag");
+  if (tag) tag.textContent = "402";
   $("provider-out").hidden = true;
   $("po-code").hidden = true;
   $("peek").setAttribute("aria-expanded", "false");
@@ -228,6 +229,9 @@ function resetVault() {
   resetChecksToPending();
   const seal = $("seal");
   seal.classList.remove("stamp", "press");
+  seal.dataset.state = "idle";
+  $("seal-state").textContent = "READY";
+  if (state.spec) $("seal-amount").textContent = usd(state.spec.priceCents);
 }
 
 function setRunning(on) {
@@ -268,8 +272,20 @@ function stampSeal(released, cents) {
 
 function showOffer(offer) {
   if (!offer) return;
+  const tag = document.querySelector("#offer-wire .wire-tag");
+  if (tag) tag.textContent = "402";
   $("offer-body").textContent =
     `Payment Required · ${offer.paymentId} · ${usd(offer.amountCents)} ${offer.asset} · ${offer.network}`;
+  $("offer-wire").hidden = false;
+}
+
+function markOfferPaid(tx) {
+  const payId = tx.payment ? tx.payment.paymentId : tx.offer ? tx.offer.paymentId : "";
+  const payer = tx.payment ? tx.payment.authorization.from : "";
+  const tag = document.querySelector("#offer-wire .wire-tag");
+  if (tag) tag.textContent = "paid";
+  $("offer-body").textContent =
+    `X-PAYMENT accepted · ${payId} · ${usd(tx.amountCents)} from ${shortAddr(payer)} → escrow`;
   $("offer-wire").hidden = false;
 }
 
@@ -296,7 +312,7 @@ function resetChecksToPending() {
     li.className = "check pending";
     li.querySelector(".check-box").textContent = "▫";
     if (!REDUCED) {
-      // re-arm the reveal animation
+      
       li.classList.remove("in");
     } else {
       li.classList.add("in");
@@ -312,7 +328,7 @@ function revealCheck(c) {
     li.querySelector(".check-box").textContent = c.status === "pass" ? "✓" : "✗";
     li.querySelector(".check-label").textContent = c.label;
     li.querySelector(".check-detail").textContent = c.detail;
-    // force reflow then add .in to animate
+    
     void li.offsetWidth;
     li.classList.add("in");
     resolve();
@@ -331,7 +347,6 @@ function showSettlement(tx) {
   el.hidden = false;
 }
 
-/* ---- stepper -------------------------------------------------------- */
 function setStep(name, mode) {
   const steps = document.querySelectorAll("#stepper li");
   steps.forEach((li) => {
@@ -353,41 +368,164 @@ function setStep(name, mode) {
   });
 }
 
-/* ---- ledger --------------------------------------------------------- */
 function renderLedger(rows, freshId) {
-  const wrap = $("ledger");
-  if (!rows || rows.length === 0) {
-    wrap.innerHTML = `<div class="ledger-empty" id="ledger-empty">No pacts settled yet — run one to write the first line.</div>`;
-    return;
-  }
-  wrap.innerHTML = "";
-  rows.forEach((tx) => {
-    const settled = tx.escrow === "RELEASED" || tx.escrow === "REFUNDED";
-    const released = tx.escrow === "RELEASED";
-    const v = tx.verification;
-    const tests = v ? `${v.testsPassed}/${v.testsTotal}` : "—";
-    const prov = tx.provider ? tx.provider.provider : "—";
-    const stateLabel = settled ? tx.escrow.toLowerCase() : "pending";
-    const stateCls = released ? "released" : settled ? "refunded" : "";
-    const amount = released ? usd(tx.amountCents) : usd(0);
+  const wrap1 = $("ledger");
+  const wrap2 = $("ledger-body");
+  
+  if (wrap1) {
+    if (!rows || rows.length === 0) {
+      wrap1.innerHTML = `<div class="ledger-empty" id="ledger-empty">No pacts settled yet — run one to write the first line.</div>`;
+    } else {
+      wrap1.innerHTML = "";
+      rows.forEach((tx) => {
+        const settled = tx.escrow === "RELEASED" || tx.escrow === "REFUNDED";
+        const released = tx.escrow === "RELEASED";
+        const v = tx.verification;
+        const tests = v ? `${v.testsPassed}/${v.testsTotal}` : "—";
+        const prov = tx.provider ? tx.provider.provider : "—";
+        const stateLabel = settled ? tx.escrow.toLowerCase() : "pending";
+        const stateCls = released ? "released" : settled ? "refunded" : "";
+        const amount = released ? usd(tx.amountCents) : usd(0);
 
-    const row = document.createElement("div");
-    row.className = "lrow" + (tx.id === freshId ? " fresh" : "");
-    row.innerHTML =
-      `<span class="l-id">${esc(tx.id)}</span>` +
-      `<span class="l-prov">${esc(prov)}</span>` +
-      `<span class="l-tests">tests ${esc(tests)}</span>` +
-      `<span class="l-state ${stateCls}">${esc(stateLabel)}</span>` +
-      `<span class="l-amount ${stateCls}">${esc(amount)}</span>`;
-    wrap.appendChild(row);
-  });
+        const row = document.createElement("div");
+        row.className = "lrow" + (tx.id === freshId ? " fresh" : "");
+        row.innerHTML =
+          `<span class="l-id">${esc(tx.id)}</span>` +
+          `<span class="l-prov">${esc(prov)}</span>` +
+          `<span class="l-tests">tests ${esc(tests)}</span>` +
+          `<span class="l-state ${stateCls}">${esc(stateLabel)}</span>` +
+          `<span class="l-amount ${stateCls}">${esc(amount)}</span>`;
+        wrap1.appendChild(row);
+      });
+    }
+  }
+
+  if (wrap2) {
+    wrap2.innerHTML = "";
+    if (rows && rows.length > 0) {
+      rows.forEach((tx) => {
+        const settled = tx.escrow === "RELEASED" || tx.escrow === "REFUNDED";
+        const released = tx.escrow === "RELEASED";
+        const stateLabel = settled ? tx.escrow : "PENDING";
+        const amount = released ? usd(tx.amountCents) : usd(0);
+        
+        const tr = document.createElement("tr");
+        tr.style.borderBottom = "1px solid var(--border)";
+        tr.innerHTML = 
+          `<td style="padding: 1rem;">${esc(tx.id)}</td>` +
+          `<td style="padding: 1rem;">${esc(stateLabel)}</td>` +
+          `<td style="padding: 1rem; color: var(--gold);">${esc(amount)}</td>` +
+          `<td style="padding: 1rem; color: var(--text-muted); font-family: monospace;">${esc(tx.settlementTx || tx.payment?.paymentId || "0x...")}</td>`;
+        wrap2.appendChild(tr);
+      });
+    }
+  }
 }
 
-/* ---- util ----------------------------------------------------------- */
 function esc(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])
   );
 }
 
-document.addEventListener("DOMContentLoaded", boot);
+function shortAddr(a) {
+  const s = String(a || "");
+  return s.length > 12 ? `${s.slice(0, 6)}…${s.slice(-4)}` : s;
+}
+
+async function runTollbooth() {
+  if (state.running) return;
+  state.running = true;
+  const btn = $("run-tollbooth");
+  btn.disabled = true;
+  const term = $("tb-terminal");
+  
+  try {
+    term.textContent = "> POST /api/tollbooth\n";
+    await beat(400);
+
+    let offer;
+    try {
+      const res = await fetch("/api/tollbooth", { method: "POST" });
+      const body = await res.json().catch(() => ({}));
+      if (res.status === 402) {
+        offer = body.offer || (body.accepts && body.accepts[0]);
+        term.textContent += "< 402 Payment Required\n";
+        term.textContent += `  Offer: ${usd(offer.amountCents)} ${offer.asset}\n\n`;
+      } else {
+        throw new Error("Expected 402");
+      }
+    } catch (e) {
+      term.textContent += `Error: ${e.message}\n`;
+      return;
+    }
+    await beat(600);
+
+    term.textContent += "> POST /api/tollbooth/pay\n";
+    term.textContent += "  Signing x402 payment authorization...\n";
+    await beat(600);
+    
+    const res = await fetch("/api/tollbooth/pay", { method: "POST" });
+    const body = await res.json().catch(() => ({}));
+    if (res.ok) {
+      term.textContent += "< 200 OK\n";
+      term.textContent += `  Response: ${JSON.stringify(body.data, null, 2)}\n\n`;
+      term.textContent += `  Settled instantly via x402.\n`;
+      if (body.stats) {
+        renderTally(body.stats);
+      }
+    } else {
+      term.textContent += `Error: ${body.error || res.statusText}\n`;
+    }
+  } finally {
+    state.running = false;
+    btn.disabled = false;
+  }
+}
+
+function setupTabs() {
+  const tabs = document.querySelectorAll(".nav-tab");
+  const views = {
+    escrow: $("view-escrow"),
+    tollbooth: $("view-tollbooth"),
+    ledger: $("view-ledger")
+  };
+
+  function switchTab(id) {
+    tabs.forEach(t => {
+      if (t.dataset.target === id) {
+        t.classList.add("active");
+        t.style.color = "var(--gold)";
+        t.style.borderBottom = "2px solid var(--gold)";
+      } else {
+        t.classList.remove("active");
+        t.style.color = "var(--text-muted)";
+        t.style.borderBottom = "2px solid transparent";
+      }
+    });
+
+    for (const key in views) {
+      if (views[key]) {
+        if (key === id) {
+          views[key].style.display = key === "escrow" || key === "tollbooth" ? "grid" : "block";
+        } else {
+          views[key].style.display = "none";
+        }
+      }
+    }
+  }
+
+  tabs.forEach(t => {
+    t.addEventListener("click", () => switchTab(t.dataset.target));
+  });
+
+  const btnTollbooth = $("run-tollbooth");
+  if (btnTollbooth) {
+    btnTollbooth.addEventListener("click", runTollbooth);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  boot();
+  setupTabs();
+});

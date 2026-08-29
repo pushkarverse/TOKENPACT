@@ -1,8 +1,11 @@
 {
-  "name": "tokenpact",
+  "name": "@tokenpact/cli",
   "version": "0.1.0",
   "private": true,
   "description": "Reverse escrow + quality-gated settlement for autonomous AI agents, built on x402. Don't pay for promises — pay for proof.",
+  "bin": {
+    "tokenpact": "./bin/tokenpact.js"
+  },
   "keywords": [
     "x402",
     "ai-agents",
@@ -16,15 +19,21 @@
   "license": "MIT",
   "packageManager": "pnpm@9.12.0",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.6"
   },
   "scripts": {
+    "@tokenpact": "node ./bin/tokenpact.js all",
     "build": "pnpm -r build",
-    "dev": "pnpm -r --parallel dev",
+    "dev": "pnpm --filter \"!@tokenpact/agent-*\" -r --parallel dev",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
-    "demo": "pnpm --filter @tokenpact/example-fibonacci demo",
+    "smoke": "node --import ./tools/ts-run.mjs apps/orchestrator/scripts/smoke.ts",
+    "demo:smoke": "node --import ./tools/ts-run.mjs apps/orchestrator/scripts/smoke.ts",
+    "demo:server": "node --import ./tools/ts-run.mjs apps/orchestrator/src/server.ts",
+    "demo:buyer": "node --import ./tools/ts-run.mjs agents/buyer/src/index.ts",
+    "demo:provider": "node --import ./tools/ts-run.mjs agents/provider/src/index.ts",
+    "demo": "node --import ./tools/ts-run.mjs apps/orchestrator/scripts/smoke.ts",
     "clean": "pnpm -r exec rm -rf dist node_modules && rm -rf node_modules"
   },
   "devDependencies": {

@@ -7,7 +7,7 @@ dist/
 build/
 *.tsbuildinfo
 
-# Environment / secrets  ── never commit private keys or wallet seeds
+# Environment / secrets
 .env
 .env.*
 !.env.example

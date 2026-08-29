@@ -45,21 +45,22 @@ sequenceDiagram
     participant P as Provider agent
     participant V as Verifier (sandbox)
 
-    B->>O: POST /tasks { spec }
-    O-->>B: 402 Payment Required (x402)
-    B->>O: POST /tasks { spec } + X-PAYMENT
-    O->>O: Lock reward in escrow  (OPEN → FUNDED)
-    P->>O: POST /tasks/:id/output { artifact }
-    O->>O: FUNDED → IN_PROGRESS → SUBMITTED → VERIFYING
+    B->>O: POST /api/tasks
+    O-->>B: 402 Payment Required + x402 offer  (escrow AWAITING_PAYMENT)
+    B->>O: POST /api/tasks/:id/pay + X-PAYMENT (signed)
+    O->>O: verify payment, lock escrow  (AWAITING_PAYMENT → LOCKED)
+    O-->>B: 200 + X-PAYMENT-RESPONSE
+    P->>O: POST /api/tasks/:id/produce { scenario }
+    P->>O: POST /api/tasks/:id/verify
     O->>V: verify(spec, output)
     V->>V: compile · tests · latency · schema  (in sandbox)
-    V-->>O: signed VerificationResult { passed, results }
+    V-->>O: signed VerificationResult { passed, checks }
     alt passed
-        O->>O: VERIFYING → RELEASED
-        O->>P: x402 release escrow → provider
+        O->>O: LOCKED → RELEASED
+        O->>P: settle escrow → provider
     else failed
-        O->>O: VERIFYING → REFUNDED
-        O->>B: x402 refund escrow → buyer
+        O->>O: LOCKED → REFUNDED
+        O->>B: settle escrow → buyer (the paying wallet)
     end
 ```
 
@@ -75,29 +76,25 @@ sequenceDiagram
 
 ## Escrow state machine
 
-The orchestrator can only move funds along legal transitions defined in
-`packages/core/src/state.ts`. There is no code path that releases escrow without
-first passing through `VERIFYING`.
+The orchestrator can only move funds along the legal transitions of the
+`EscrowState` type defined in `packages/core/src/types.ts`. There is exactly one
+path to `RELEASED`, and it runs through a passing verification; every failure and
+every guard violation routes the money back to the paying wallet as `REFUNDED`.
 
 ```mermaid
 stateDiagram-v2
-    [*] --> OPEN
-    OPEN --> FUNDED: FUND (x402)
-    FUNDED --> IN_PROGRESS: CLAIM
-    IN_PROGRESS --> SUBMITTED: SUBMIT
-    SUBMITTED --> VERIFYING: VERIFY
-    VERIFYING --> RELEASED: PASS
-    VERIFYING --> REFUNDED: FAIL
-    VERIFYING --> DISPUTED: DISPUTE
-    DISPUTED --> RELEASED: PASS
-    DISPUTED --> REFUNDED: FAIL
-    OPEN --> REFUNDED: EXPIRE
-    FUNDED --> REFUNDED: EXPIRE
-    IN_PROGRESS --> REFUNDED: EXPIRE
-    SUBMITTED --> REFUNDED: EXPIRE
+    [*] --> AWAITING_PAYMENT: POST /api/tasks (402 + x402 offer)
+    AWAITING_PAYMENT --> LOCKED: PAY — X-PAYMENT verified
+    LOCKED --> RELEASED: VERIFY passed → settle to provider
+    LOCKED --> REFUNDED: VERIFY failed → refund paying wallet
     RELEASED --> [*]
     REFUNDED --> [*]
 ```
+
+Escrow only locks once a payment authorization is verified (signature, amount,
+offer match, expiry, and nonce replay all checked), and it can only settle once —
+`produce` and `verify` are rejected until the escrow is `LOCKED`, and a settled
+transaction cannot be settled again.
 
 ## Why x402
 

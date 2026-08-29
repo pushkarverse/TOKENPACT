@@ -14,15 +14,10 @@
 
 <div class="page">
 
-  <!-- ===================== Masthead ===================== -->
   <header class="masthead">
     <div class="brand">
-      <span class="brand-seal" aria-hidden="true">
-        <svg viewBox="0 0 32 32" width="28" height="28">
-          <circle cx="16" cy="16" r="14.2" class="bs-ring" />
-          <circle cx="16" cy="16" r="10.4" class="bs-ring bs-ring-in" />
-          <path d="M12.4 16.2 l2.6 2.9 l4.8 -6.6" class="bs-tick" />
-        </svg>
+      <span class="brand-seal" aria-hidden="true" style="display: flex; align-items: center; justify-content: center;">
+        <img src="/tokenpact-logo.jpg" alt="TokenPact Logo" style="width: 44px; height: 44px; object-fit: cover; border-radius: 8px; mix-blend-mode: screen;" />
       </span>
       <div class="brand-text">
         <h1>TokenPact</h1>
@@ -48,20 +43,22 @@
     </div>
   </header>
 
-  <!-- The thesis line -->
   <p class="thesis">
     Funds lock <em>before</em> work begins. An independent verifier machine-checks the output against its spec.
     The x402 rail releases payment only on&nbsp;proof — otherwise the buyer is refunded.
     <span class="thesis-mark">Don't pay for promises. Pay for proof.</span>
   </p>
+  
+  <div class="tabs" style="display: flex; gap: 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2rem; max-width: 1280px; margin-left: auto; margin-right: auto; padding: 0 4rem;">
+    <button class="nav-tab active" data-target="escrow" style="background: none; border: none; color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 0.5rem; font-family: 'Space Grotesk'; font-size: 1rem; cursor: pointer; text-transform: uppercase;">01 &mdash; REVERSE ESCROW</button>
+    <button class="nav-tab" data-target="tollbooth" style="background: none; border: none; color: var(--text-muted); border-bottom: 2px solid transparent; padding-bottom: 0.5rem; font-family: 'Space Grotesk'; font-size: 1rem; cursor: pointer; text-transform: uppercase;">02 &mdash; API TOLLBOOTH</button>
+    <button class="nav-tab" data-target="ledger" style="background: none; border: none; color: var(--text-muted); border-bottom: 2px solid transparent; padding-bottom: 0.5rem; font-family: 'Space Grotesk'; font-size: 1rem; cursor: pointer; text-transform: uppercase;">03 &mdash; DB LEDGER</button>
+  </div>
 
-  <!-- ===================== Working area ===================== -->
-  <main class="grid">
+  <main class="grid" id="view-escrow">
 
-    <!-- ---------- Left rail: the pact + providers ---------- -->
     <section class="col-left">
 
-      <!-- The Pact -->
       <article class="card card-pact">
         <div class="card-head">
           <span class="eyebrow">The pact · intent plane</span>
@@ -79,13 +76,12 @@
         </p>
       </article>
 
-      <!-- Providers -->
       <article class="card card-providers">
         <div class="card-head">
           <span class="eyebrow">Choose a provider · execution plane</span>
         </div>
         <div class="providers" id="providers" role="radiogroup" aria-label="Provider agent">
-          <!-- provider options injected by app.js -->
+          
         </div>
 
         <button class="run" id="run" type="button">
@@ -96,7 +92,6 @@
 
     </section>
 
-    <!-- ---------- Right: the vault (hero) ---------- -->
     <section class="col-vault">
       <article class="card vault" id="vault">
 
@@ -108,14 +103,12 @@
           <span class="state-chip state-idle" id="escrow-chip" aria-live="polite">Awaiting pact</span>
         </div>
 
-        <!-- Plane stepper -->
         <ol class="stepper" id="stepper" aria-label="Progress">
           <li data-step="intent"><span class="step-dot"></span>Intent</li>
           <li data-step="execution"><span class="step-dot"></span>Execution</li>
           <li data-step="settlement"><span class="step-dot"></span>Settlement</li>
         </ol>
 
-        <!-- The seal -->
         <div class="seal-stage">
           <svg class="seal" id="seal" viewBox="0 0 240 240" data-state="idle" role="img" aria-label="Escrow seal">
             <defs>
@@ -133,14 +126,12 @@
               </radialGradient>
             </defs>
 
-            <!-- breathing gold halo — sits behind the disc -->
             <circle cx="120" cy="120" r="120" class="seal-glow" fill="url(#sealGlow)" aria-hidden="true" />
 
             <circle cx="120" cy="120" r="116" class="seal-rim" />
             <circle cx="120" cy="120" r="104" class="seal-face" fill="url(#sealFace)" />
             <circle cx="120" cy="120" r="100" class="seal-ring seal-ring-hair" />
 
-            <!-- outer orbit — engraved legend, clockwise -->
             <g class="seal-orbit seal-orbit--cw">
               <text class="seal-engrave">
                 <textPath href="#sealArcTop" startOffset="50%" text-anchor="middle">TOKENPACT · REVERSE ESCROW</textPath>
@@ -150,26 +141,22 @@
               </text>
             </g>
 
-            <!-- outer trace — live highlight sweeping the rim, clockwise -->
             <g class="seal-trace seal-trace--out" aria-hidden="true">
               <circle cx="120" cy="120" r="100" class="seal-trace-arc" pathLength="360" />
             </g>
 
             <circle cx="120" cy="120" r="80" class="seal-ring" />
 
-            <!-- inner dial — fine ticks, counter-clockwise -->
             <g class="seal-orbit seal-orbit--ccw" aria-hidden="true">
               <circle cx="120" cy="120" r="70" class="seal-ticks" pathLength="360" />
             </g>
 
             <circle cx="120" cy="120" r="60" class="seal-ring seal-ring-core" />
 
-            <!-- inner trace — live highlight on the core, counter-clockwise -->
             <g class="seal-trace seal-trace--in" aria-hidden="true">
               <circle cx="120" cy="120" r="60" class="seal-trace-arc seal-trace-arc--in" pathLength="360" />
             </g>
 
-            <!-- state glyphs -->
             <g class="glyph glyph-lock">
               <path class="g-stroke" d="M108,104 v-8 a12,12 0 0 1 24,0 v8" />
               <rect class="g-fill" x="103" y="104" width="34" height="27" rx="5" />
@@ -189,13 +176,11 @@
           </svg>
         </div>
 
-        <!-- x402 offer line -->
         <div class="wire" id="offer-wire" hidden>
           <span class="wire-tag">402</span>
           <span class="wire-body" id="offer-body">Payment Required</span>
         </div>
 
-        <!-- Provider output -->
         <div class="provider-out" id="provider-out" hidden>
           <div class="po-line">
             <span class="eyebrow">Provider output</span>
@@ -209,7 +194,6 @@
           <pre class="po-code" id="po-code" hidden></pre>
         </div>
 
-        <!-- Verifier receipt -->
         <div class="receipt" id="receipt" hidden>
           <div class="receipt-head">
             <span class="eyebrow">Verifier receipt</span>
@@ -222,7 +206,6 @@
           </div>
         </div>
 
-        <!-- Settlement -->
         <div class="settlement" id="settlement" hidden>
           <span class="settle-verdict" id="settle-verdict">—</span>
           <span class="settle-tx" id="settle-tx">0x—</span>
@@ -231,7 +214,6 @@
       </article>
     </section>
 
-    <!-- ---------- Ledger (full width) ---------- -->
     <section class="col-ledger">
       <article class="card card-ledger">
         <div class="card-head">
@@ -244,7 +226,34 @@
       </article>
     </section>
 
-  </main>
+      <div id="view-ledger" class="view" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <h3>TRANSACTION LEDGER</h3>
+            <span class="badge">ON-CHAIN SETTLEMENTS</span>
+          </div>
+          <div class="card-body">
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+              Immutable record of all autonomous AI transactions and verifications.
+            </p>
+            <div class="code-block" style="padding: 0;">
+              <table id="ledger-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                  <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+                    <th style="padding: 1rem;">Task ID</th>
+                    <th style="padding: 1rem;">Status</th>
+                    <th style="padding: 1rem;">Amount</th>
+                    <th style="padding: 1rem;">TX Hash</th>
+                  </tr>
+                </thead>
+                <tbody id="ledger-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
 
   <footer class="footjust">
     <span>Verification is real — the sandbox executes the provider's actual code.</span>

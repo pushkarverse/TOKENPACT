@@ -1,103 +1,104 @@
-// The demo catalog: one task spec authored by the buyer agent, and three
-// provider agents that respond to it with different behaviour. The verifier
-// runs the *real* code of whichever provider is chosen.
-//
-// Task: implement isPrime(n). Acceptance is machine-checkable:
-//   compiles && all tests pass && p95 latency < 50ms && returns a boolean.
-
-import type { TaskSpec, ProviderScenario, ProviderOutput } from "./types.ts";
+import type { TaskSpec, ProviderScenario, ProviderOutput } from "./types.js";
 import { createHash } from "node:crypto";
 
-// A large prime used only to measure latency. A √n implementation clears it in
-// microseconds; a naive O(n) implementation must loop ~10^8 times and blows the
-// budget. Primality matters: on a composite the naive loop would exit early.
-const LATENCY_PROBE = 100_000_007; // verified prime
-
 export function buildSpec(): TaskSpec {
-  const tests: { input: unknown[]; expected: unknown }[] = [
-    { input: [1], expected: false },
-    { input: [2], expected: true },
-    { input: [3], expected: true },
-    { input: [4], expected: false },
-    { input: [9], expected: false },
-    { input: [11], expected: true },
-    { input: [15], expected: false },
-    { input: [17], expected: true },
-    { input: [25], expected: false },
-    { input: [29], expected: true },
-    { input: [97], expected: true },
-    { input: [100], expected: false },
+  const tests = [
+    { input: "0\n", expected: "0\n" },
+    { input: "1\n", expected: "1\n" },
+    { input: "5\n", expected: "5\n" },
+    { input: "10\n", expected: "55\n" },
+    { input: "15\n", expected: "610\n" },
   ];
 
   return {
-    id: "spec_isprime_v1",
-    title: "Primality check",
-    task: "Implement isPrime(n): return true iff n is a prime number.",
-    fn: "isPrime",
-    language: "javascript",
+    id: "spec_fibonacci_v1",
+    title: "Fibonacci Sequence (Algorithm)",
+    task: "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+    language: "python",
     tests,
-    latencyProbe: { input: [LATENCY_PROBE], iterations: 60 },
     acceptIf: {
       compiles: true,
       testsMustAllPass: true,
-      p95BudgetMs: 50,
-      schema: "boolean",
-      humanExpr: "compiles && tests_pass && p95 < 50ms && schema_match",
+      p95BudgetMs: 500, 
+      schema: "string", 
+      humanExpr: "compiles && tests_pass && p95 < 500ms && schema_match",
     },
-    priceCents: 8, // $0.08, echoing the deck
+    priceCents: 8,
     createdAt: Date.now(),
   };
 }
 
-// --- Provider implementations (real code the verifier will execute) ---------
-
 const HONEST = `
-function isPrime(n) {
-  if (!Number.isInteger(n) || n < 2) return false;
-  if (n % 2 === 0) return n === 2;
-  for (let i = 3; i * i <= n; i += 2) {
-    if (n % i === 0) return false;
+const fs = require('fs');
+const input = fs.readFileSync(0, 'utf-8').trim().split('\\n');
+
+function fib(n) {
+  let a = 0n, b = 1n;
+  for (let i = 0; i < n; i++) {
+    let t = a + b;
+    a = b;
+    b = t;
   }
-  return true;
+  return a.toString();
+}
+
+for (const line of input) {
+  if (!line.trim()) continue;
+  console.log(fib(parseInt(line, 10)));
 }
 `.trim();
 
-// A believable bug: "assume every odd number is prime." Fast, returns a
-// boolean, but wrong on 1, 2, 9, 15, 25 → 7 / 12 tests pass.
 const FAULTY = `
-function isPrime(n) {
-  // shortcut: odd numbers are prime
-  return n % 2 === 1;
-}
+import sys
+
+def fibonacci(n):
+    if n == 0:
+        return 0
+    return n + 1
+
+if __name__ == '__main__':
+    for line in sys.stdin:
+        n = int(line.strip())
+        print(fibonacci(n))
 `.trim();
 
-// Correct on every test, but O(n): it clears the unit tests (all small) and
-// then blows the latency budget on the probe input.
 const SLOW = `
-function isPrime(n) {
-  if (!Number.isInteger(n) || n < 2) return false;
-  for (let i = 2; i < n; i++) {
-    if (n % i === 0) return false;
-  }
-  return true;
-}
+#!/bin/bash
+sleep 0.6
+while read n; do
+  if [ -z "$n" ]; then continue; fi
+  # Doing this in bash recursively would time out completely, so we just return fake
+  # or iterative, but we already slept so it will fail latency check anyway.
+  # Let's output correct values using a basic loop so it ONLY fails latency.
+  a=0
+  b=1
+  for (( i=0; i<n; i++ )); do
+    t=$((a + b))
+    a=$b
+    b=$t
+  done
+  echo $a
+done
 `.trim();
 
-const IMPLS: Record<ProviderScenario, { headline: string; code: string; provider: string }> = {
+const IMPLS: Record<ProviderScenario, { headline: string; code: string; provider: string; language: string }> = {
   honest: {
     provider: "provider.honest.agent",
-    headline: "√n trial division — correct and fast",
+    headline: "Iterative O(n) JS — correct and fast",
     code: HONEST,
+    language: "javascript",
   },
   faulty: {
     provider: "provider.faulty.agent",
-    headline: "Assumes every odd number is prime",
+    headline: "Faulty Python — Assumes fib(n) = n + 1",
     code: FAULTY,
+    language: "python",
   },
   slow: {
     provider: "provider.slow.agent",
-    headline: "Correct, but O(n) — misses the latency budget",
+    headline: "Slow Bash — Fails the latency budget",
     code: SLOW,
+    language: "bash",
   },
 };
 
@@ -108,6 +109,7 @@ export function produce(scenario: ProviderScenario): ProviderOutput {
     provider: impl.provider,
     scenario,
     headline: impl.headline,
+    language: impl.language,
     code: impl.code,
     commitHash,
     producedAt: Date.now(),
@@ -116,7 +118,6 @@ export function produce(scenario: ProviderScenario): ProviderOutput {
 
 export const SCENARIOS: ProviderScenario[] = ["honest", "faulty", "slow"];
 
-/** Lightweight catalog the dashboard uses to render the three provider options. */
 export const SCENARIO_META: { id: ProviderScenario; name: string; headline: string }[] = [
   { id: "honest", name: "Honest", headline: IMPLS.honest.headline },
   { id: "faulty", name: "Faulty", headline: IMPLS.faulty.headline },

@@ -7,7 +7,7 @@
 Reverse escrow + quality-gated settlement for autonomous AI agents, built on [**x402**](https://x402.org).
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-22d3ee?style=for-the-badge)](./LICENSE)
-[![Node >=20](https://img.shields.io/badge/node-%3E%3D20-22d3ee?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+[![Node >=22.6](https://img.shields.io/badge/node-%3E%3D22.6-22d3ee?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
 [![pnpm workspace](https://img.shields.io/badge/pnpm-workspace-22d3ee?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io)
 [![TypeScript strict](https://img.shields.io/badge/TypeScript-strict-22d3ee?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Built on x402](https://img.shields.io/badge/built%20on-x402-8b5cf6?style=for-the-badge)](https://x402.org)
@@ -101,31 +101,40 @@ If it can't be checked by a machine, it can't gate a payment. A spec pairs a
 plain-language ask with a list of checks — and **all of them must pass**.
 
 ```jsonc
-// examples/fibonacci/task.json
+// the demo spec, authored by the buyer — packages/core/src/scenarios.ts
 {
-  "task": "Write a Python function fib(n) that returns the n-th Fibonacci number.",
-  "acceptIf": [
-    { "kind": "compiles" },
-    { "kind": "tests_pass",   "suite": "tests/", "minPassRatio": 1 },
-    { "kind": "latency",      "metric": "p95", "ltMs": 50 },
-    { "kind": "schema_match", "schema": { "type": "integer", "minimum": 0 } }
-  ],
-  "reward": { "amount": "0.25", "asset": "USDC", "network": "base-sepolia" }
+  "title": "Primality check",
+  "task": "Implement isPrime(n): return true iff n is a prime number.",
+  "fn": "isPrime",
+  "tests": [ /* 12 cases: [1]→false, [2]→true, … [97]→true, [100]→false */ ],
+  "acceptIf": {
+    "compiles": true,
+    "testsMustAllPass": true,   // all 12 must pass
+    "p95BudgetMs": 50,          // p95 latency under 50ms
+    "schema": "boolean"         // output must be a boolean
+  },
+  "priceCents": 8               // $0.08 reward, held in escrow
 }
 ```
 
 That's the predicate `compiles && tests_pass && p95 < 50ms && schema_match`,
-expressed as data the verifier executes deterministically:
+expressed as data the verifier executes deterministically against the provider's
+*actual* code:
 
 ```text
 VERIFIER PIPELINE                RUNNING
 code compiles          ────────  ✓ ok
-unit tests             ────────  ✓ 18/18
-runtime threshold      ────────  ✓ p95 = 31ms
-output schema          ────────  ✓ match
+unit tests             ────────  ✓ 12/12
+runtime threshold      ────────  ✓ p95 < 50ms
+output schema          ────────  ✓ boolean
                                  ───────────────
                                  PASS → payment released
 ```
+
+The three demo providers make the gate bite: the **honest** √n solution passes
+all four checks and is paid; the **faulty** "every odd number is prime" solution
+fails 5 of 12 tests; the **slow** O(n) solution passes every test but blows the
+p95 budget. Two of the three end in a refund — that's the point.
 
 Full details — every check kind, the verdict format, and how to add your own —
 live in [`docs/verification-spec.md`](./docs/verification-spec.md).
@@ -141,19 +150,22 @@ sequenceDiagram
     participant B as Buyer agent
     participant O as Orchestrator (escrow)
     participant P as Provider agent
-    participant V as Verifier (sandbox)
+    participant V as Verifier (in-process sandbox)
 
-    B->>O: POST /tasks { spec }
-    O-->>B: 402 Payment Required (x402)
-    B->>O: retry + X-PAYMENT → lock escrow (FUNDED)
-    P->>O: POST /tasks/:id/output { artifact }
-    O->>V: verify(spec, output)
-    V->>V: compile · tests · latency · schema (sandboxed)
-    V-->>O: signed verdict { passed, results }
+    B->>O: POST /api/tasks
+    O-->>B: 402 Payment Required + x402 offer  (escrow AWAITING_PAYMENT)
+    B->>O: POST /api/tasks/:id/pay + X-PAYMENT (signed)
+    O->>O: verify payment → lock escrow (LOCKED)
+    O-->>B: 200 + X-PAYMENT-RESPONSE
+    P->>O: POST /api/tasks/:id/produce { scenario }
+    P->>O: POST /api/tasks/:id/verify
+    O->>V: verify(spec, output) in a child-process sandbox
+    V->>V: compile · tests · latency · schema
+    V-->>O: signed verdict { passed, checks }
     alt passed
-        O->>P: x402 release escrow → provider
+        O->>P: release escrow → provider (RELEASED)
     else failed
-        O->>B: x402 refund escrow → buyer
+        O->>B: refund escrow → paying wallet (REFUNDED)
     end
 ```
 
@@ -179,119 +191,144 @@ and settles **conditionally**, after the verifier signs off.
 
 ### Prerequisites
 
-- **Node.js ≥ 20**
-- **pnpm ≥ 9** — `corepack enable && corepack prepare pnpm@latest --activate`
-- **Docker** (the verifier executes untrusted output in a sandbox)
-- A testnet wallet + a little Base-Sepolia USDC for the payment path *(optional
-  for the mock demo)*
+- **Node.js ≥ 22.6** — the demo runs TypeScript sources directly via Node's
+  built-in type-stripping (no build, no install needed for the offline demo).
+- **pnpm ≥ 9** *(optional)* — `corepack enable && corepack prepare pnpm@latest --activate`.
+  Only needed for the `pnpm …` script aliases; everything also runs with bare `node`.
 
-### Install & run
+> The end-to-end demo runs **fully offline** — no Docker, no wallet, no testnet
+> funds. x402 settlement is *simulated* (real Ed25519-signed payment
+> authorizations, but no live chain or facilitator). A live rail is on the
+> [roadmap](#roadmap).
+
+### Run the demo
+
+The fastest way to see the whole loop settle three ways — released, and refunded
+two different ways — is the end-to-end smoke run. **Zero install:**
 
 ```bash
-# 1. Clone and install the workspace
 git clone https://github.com/<your-org>/tokenpact.git
 cd tokenpact
-pnpm install
 
-# 2. Configure — copy the template and fill in testnet values
-cp .env.example .env
-
-# 3. Build everything
-pnpm build
-
-# 4. Start the services (separate terminals)
-pnpm --filter @tokenpact/orchestrator dev   # escrow + settlement  :8402
-pnpm --filter @tokenpact/verifier dev        # sandboxed verifier   :8403
-
-# 5. Run the end-to-end demo — an agent hires an agent to write fib(n)
-pnpm demo
+# One-shot proof: authors a task, pays the x402 offer, produces + verifies each
+# provider, and asserts the settlement. Runs honest → RELEASED, faulty → REFUND,
+# slow → REFUND, then reconciles the ledger.
+node --import ./tools/ts-run.mjs apps/orchestrator/scripts/smoke.ts
 ```
 
-Break the solution or blow the latency budget and the task settles as
-**REFUNDED** — the provider gets `$0`. That's the whole point.
+To drive it through the live HTTP surface + dashboard instead, start the
+orchestrator and open the browser demo:
 
-> **Note:** this is a hackathon scaffold. The escrow state machine, task-spec
-> schema, HTTP surface, and demo flow are wired end to end; the x402 settlement
-> calls and the sandbox runner are marked with clearly-labelled `TODO`s where you
-> plug in the SDKs. See the [roadmap](#roadmap).
+```bash
+# 1. Start the escrow + settlement server (serves the dashboard too)
+node --import ./tools/ts-run.mjs apps/orchestrator/src/server.ts
+#    → open http://localhost:8402 and click "Run the pact" for each provider
+
+# 2. (optional) drive it from the CLI agents, in two more terminals
+node --import ./tools/ts-run.mjs agents/buyer/src/index.ts       # authors + pays
+node --import ./tools/ts-run.mjs agents/provider/src/index.ts honest   # honest | faulty | slow
+```
+
+With **pnpm**, the same commands are wrapped as script aliases:
+
+```bash
+pnpm demo         # the one-shot smoke proof (no server needed)
+pnpm demo:server  # escrow + settlement server + dashboard on :8402
+pnpm demo:buyer   # buyer agent: authors a task and pays the x402 offer
+pnpm demo:provider honest   # provider agent: honest | faulty | slow
+```
+
+Choose the **faulty** or **slow** provider and the task settles as **REFUNDED** —
+the provider gets `$0` and the paying wallet is made whole. That's the whole point.
+
+> **What's real vs. simulated:** verification is real (the sandbox executes the
+> provider's actual code and the pass/fail gate is genuine), and payment
+> authorizations are really Ed25519-signed and verified. Only the settlement
+> *transfer* is simulated — no funds move on a live chain. See the
+> [roadmap](#roadmap) for the on-chain path and the Docker-isolated sandbox.
 
 ## Repository layout
 
 ```
 tokenpact/
 ├── apps/
-│   ├── orchestrator/     # Escrow lifecycle + x402 settlement coordinator (API)
-│   └── verifier/         # Sandboxed verification service (compile·tests·schema)
+│   ├── orchestrator/     # Escrow state machine + x402 settlement + HTTP API
+│   │   ├── src/          #   server.ts · store.ts (ledger.json) · x402.ts
+│   │   ├── public/       #   the browser dashboard (index.html · app.js · styles.css)
+│   │   └── scripts/      #   smoke.ts — the asserting end-to-end demo
+│   └── verifier/         # Cloud Verification client: compile · tests · latency · schema
 ├── agents/
-│   ├── buyer/            # Example buyer agent (posts task + funds escrow)
-│   └── provider/         # Example provider agent (produces the output)
+│   ├── buyer/            # Example buyer agent (premium ASCII CLI + x402 payment)
+│   └── provider/         # Example provider agent (honest · faulty · slow)
+├── contracts/            # Smart Contract Prototypes (TokenPactEscrow.sol)
 ├── packages/
-│   └── core/             # Shared types, task-spec schema, escrow state machine
-├── examples/
-│   └── fibonacci/        # The end-to-end demo from the pitch
-├── docs/                 # Architecture + verification spec
+│   └── core/             # Shared types, task spec + demo scenarios, x402 primitives
+├── tools/                # ts-run.mjs / ts-resolve.mjs — run TS sources, zero build
+├── docs/                 # Architecture · verification spec · structure guide
 └── .github/              # CI + templates
 ```
 
 Managed as a **pnpm workspace**. Shared code lives in `@tokenpact/core` and is
-consumed via `workspace:*`.
+consumed via `workspace:*`. The verifier relies on the **Piston API** to securely execute code in cloud sandboxes across 50+ programming languages.
 
 ## API
 
-**Orchestrator** (`:8402`)
+**Orchestrator** (`:8402`) — the escrow state machine, the x402 handshake, and
+the settlement coordinator. It also serves the dashboard at `/`.
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| `GET`  | `/healthz` | Liveness check |
-| `POST` | `/tasks` | Publish a task + spec; funds escrow via the x402 402-handshake |
-| `GET`  | `/tasks/:id` | Inspect a task's escrow state + record |
-| `POST` | `/tasks/:id/output` | Provider submits an output artifact → triggers verification |
-| `POST` | `/tasks/:id/verification` | Verifier posts a signed verdict → settlement |
+| `POST` | `/api/tasks` | Author a task from the demo spec → **`402 Payment Required`** with the x402 offer (escrow `AWAITING_PAYMENT`) |
+| `POST` | `/api/tasks/:id/pay` | Submit the signed `X-PAYMENT` → verify + lock escrow (`LOCKED`); replies `200` + `X-PAYMENT-RESPONSE` |
+| `POST` | `/api/tasks/:id/produce` | Provider produces an output for a `{ scenario }` (`honest` \| `faulty` \| `slow`) |
+| `POST` | `/api/tasks/:id/verify` | Run the sandboxed checks → settle: `RELEASED` on PASS, `REFUNDED` on FAIL |
+| `GET`  | `/api/tasks/:id` | Inspect one transaction's escrow state + record |
+| `GET`  | `/api/state` | Demo spec, provider scenarios, addresses, ledger, and running stats |
+| `GET`  | `/api/ledger` | The full settlement ledger |
 
-**Verifier** (`:8403`)
-
-| Method | Route | Purpose |
-| --- | --- | --- |
-| `GET`  | `/healthz` | Liveness check |
-| `POST` | `/verify` | Body `{ spec, output }` → signed `VerificationResult` |
+The **verifier** is not a network service — it's an in-process library
+(`apps/verifier`) the orchestrator calls during `/verify`, running the provider's
+code in a child-process sandbox and returning a signed `VerificationResult`.
 
 ## Configuration
 
-Set via `.env` (see [`.env.example`](./.env.example) for the full list):
+The offline demo needs **no configuration** — it runs with zero env vars. The
+variables below are for the *planned* live-rail path (real facilitator, wallets,
+persistent ledger); set them via `.env` (see [`.env.example`](./.env.example)).
+Only `ORCHESTRATOR_PORT` affects the demo today.
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `ORCHESTRATOR_PORT` | `8402` | Orchestrator HTTP port |
-| `VERIFIER_PORT` | `8403` | Verifier HTTP port |
-| `SANDBOX_DRIVER` | `docker` | Isolation backend: `docker` \| `firecracker` \| `none` |
+| `ORCHESTRATOR_PORT` | `8402` | Orchestrator HTTP port (the only var the demo reads) |
+| `SANDBOX_DRIVER` | `docker` | *Planned* isolation backend: `docker` \| `firecracker` \| `none` |
 | `SANDBOX_TIMEOUT_MS` | `10000` | Hard wall-clock limit per verification run |
-| `X402_NETWORK` | `base-sepolia` | Settlement network: `base-sepolia` \| `base` |
-| `X402_FACILITATOR_URL` | `https://x402.org/facilitator` | Verifies + settles x402 payments |
-| `X402_ASSET` | `USDC` | Settlement asset |
-| `BUYER_PRIVATE_KEY` | — | Funds escrow *(testnet/burner keys only)* |
-| `DATABASE_URL` | `file:./data/tokenpact.sqlite` | Transaction log |
+| `X402_NETWORK` | `base-sepolia` | *Planned* settlement network: `base-sepolia` \| `base` |
+| `X402_FACILITATOR_URL` | `https://x402.org/facilitator` | *Planned* facilitator that verifies + settles x402 payments |
+| `X402_ASSET` | `USDC` | *Planned* settlement asset |
+| `BUYER_PRIVATE_KEY` | — | *Planned* — funds escrow on a live rail *(testnet/burner keys only)* |
+| `DATABASE_URL` | `file:./data/tokenpact.sqlite` | *Planned* persistent transaction log |
 
 > ⚠️ Use **testnet keys and burner wallets** in development. Never commit a real
 > `.env`; it's already git-ignored.
 
 ## Roadmap
 
-**Running today**
+**Running today** (fully offline, settlement simulated)
 
-- [x] Task-spec schema with a typed, extensible acceptance-check model
-- [x] Escrow state machine with settlement-safe transitions
-- [x] Orchestrator API for the full task lifecycle
-- [x] Verifier pipeline structure (compile · tests · latency · schema)
-- [x] End-to-end demo flow (buyer → provider → verifier → settlement)
+- [x] Typed task spec with an extensible, machine-checkable acceptance model
+- [x] Escrow state machine `AWAITING_PAYMENT → LOCKED → RELEASED / REFUNDED` with settlement-safe transitions
+- [x] x402 handshake: `402` offer → signed `X-PAYMENT` → verify → lock (real ECDSA sigs)
+- [x] Universal Cloud Verification (Piston API sandbox) supporting 50+ languages + network latency checks
+- [x] Persistent JSON Transaction Ledger with UI Visualizer
+- [x] **Metered access** — API Tollbooth with x402 micropayments
+- [x] End-to-end demo: browser dashboard, premium ASCII CLI agents, and an asserting smoke run
 
-**Prototype / planned**
+- [x] Smart Contract Prototype (`TokenPactEscrow.sol`) for on-chain proof
 
-- [ ] Live x402 settlement (release / refund) through a facilitator
-- [ ] Dockerized sandbox runner with enforced CPU/memory/network limits
-- [ ] Signed verifier attestations + signature verification at the boundary
-- [ ] On-chain escrow contract + on-chain transaction log
-- [ ] Multiple independent verifiers (quorum / staking)
-- [ ] **Metered access** — the same primitives as an API *tollbooth* (see below)
+**Future Roadmap**
+
+- Live x402 settlement — deploying the contract to Base Sepolia
+- Multiple independent verifiers over the signed attestations (quorum / staking)
 
 ### Second surface — the tollbooth
 
@@ -303,13 +340,16 @@ usage, and enforce per-agent budgets. **One payment layer, two agent economies.*
 
 | Layer | Today | Prototype / planned |
 | --- | --- | --- |
-| **Agent** | TypeScript agents, HTTP APIs, backend API | — |
-| **Verification** | Sandboxed runner, automated tests, schema checks | Hardened isolation |
-| **Payments** | x402, wallet layer | On-chain escrow contract |
-| **State** | Transaction-log DB (SQLite) | On-chain settlement + indexer |
+| **Agent** | TypeScript buyer/provider agents over HTTP with premium ASCII CLI | — |
+| **Verification** | Piston API Cloud Sandbox (Supports 50+ languages, real execution) | Multiple decentralized verifiers |
+| **Payments** | x402 handshake, ECDSA-signed authorizations, Solidity contract prototype | Deployed on-chain escrow + live facilitator |
+| **State** | Persistent file-system ledger (`ledger.json`) + balances | On-chain log + indexer |
 
-Runtime: **Node.js 20 + TypeScript (strict)**, **pnpm** workspaces, **Express**,
-**zod**. Payments via the **x402** SDKs.
+Runtime: **Node.js ≥ 22.6 + TypeScript (strict)**, **pnpm** workspaces. The demo
+server uses Node's built-in `http` — no framework — and runs TypeScript sources
+directly via Node's type-stripping loader (`tools/ts-run.mjs`), so the offline
+demo needs no build and no dependency install. The live x402 rail plugs in at the
+settlement boundary.
 
 ## Why this is different
 

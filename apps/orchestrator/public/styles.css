@@ -1,40 +1,31 @@
-/* =====================================================================
-   TokenPact — "Vault" design system
-   Warm charcoal + gold foil. Editorial, letterpress-adjacent, restrained.
-   No neon, no glassmorphism, no gradient text. Gold is ink, not light.
-   ===================================================================== */
+
 
 :root {
   color-scheme: dark;
 
-  /* surfaces — warm charcoal, never blue-black */
-  --bg:            #17140f;
-  --surface:       #1f1b15;
-  --surface-2:     #14110b;   /* insets, receipt, code */
-  --surface-3:     #251f17;   /* raised / selected */
+  --bg:            #1a0b2e;
+  --surface:       #2a1645;
+  --surface-2:     #140726;   
+  --surface-3:     #341c54;   
 
-  /* hairlines */
-  --line:          #322c22;
-  --line-strong:   #423a2c;
+  --line:          #402565;
+  --line-strong:   #543282;
 
-  /* ink */
-  --text:          #ede6d8;   /* parchment */
-  --muted:         #9a8e79;
-  --faint:         #6c6250;
+  --text:          #f0e6ff;   
+  --muted:         #b39ed6;
+  --faint:         #7d64a5;
 
-  /* gold foil */
-  --gold:          #d8a24a;
-  --gold-deep:     #b07e2e;
-  --gold-dim:      #7c6031;
-  --gold-wash:     rgba(216,162,74,0.10);
+  --gold:          #ffea00;
+  --gold-deep:     #d4c300;
+  --gold-dim:      #8c8100;
+  --gold-wash:     rgba(255, 234, 0, 0.10);
 
-  /* verdicts — muted, not candy */
-  --green:         #7bc08a;
-  --green-deep:    #3f7a54;
-  --green-wash:    rgba(123,192,138,0.10);
-  --red:           #d67c66;
-  --red-deep:      #9e4a3b;
-  --red-wash:      rgba(214,124,102,0.10);
+  --green:         #39ff14; 
+  --green-deep:    #2bc20f;
+  --green-wash:    rgba(57, 255, 20, 0.10);
+  --red:           #ff2400; 
+  --red-deep:      #cc1d00;
+  --red-wash:      rgba(255, 36, 0, 0.10);
 
   --radius:        9px;
   --radius-sm:     6px;
@@ -52,8 +43,8 @@ html, body { margin: 0; }
 
 body {
   background:
-    radial-gradient(1100px 620px at 72% -8%, #1d1912 0%, rgba(29,25,18,0) 60%),
-    radial-gradient(900px 700px at 0% 100%, #191510 0%, rgba(25,21,16,0) 55%),
+    radial-gradient(1100px 620px at 72% -8%, #311854 0%, rgba(49,24,84,0) 60%),
+    radial-gradient(900px 700px at 0% 100%, #261142 0%, rgba(38,17,66,0) 55%),
     var(--bg);
   color: var(--text);
   font-family: var(--font-body);
@@ -70,12 +61,8 @@ body {
   padding: 34px 30px 46px;
 }
 
-/* selection in gold */
 ::selection { background: rgba(216,162,74,0.26); color: #fff4e0; }
 
-/* --------------------------------------------------------------------
-   Masthead
-   -------------------------------------------------------------------- */
 .masthead {
   display: flex;
   align-items: flex-start;
@@ -127,7 +114,6 @@ body {
 }
 .tally-sep { width: 1px; height: 30px; background: var(--line); }
 
-/* thesis line */
 .thesis {
   margin: 22px 0 26px;
   max-width: 760px;
@@ -146,9 +132,6 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* --------------------------------------------------------------------
-   Grid
-   -------------------------------------------------------------------- */
 .grid {
   display: grid;
   grid-template-columns: minmax(320px, 0.82fr) 1.18fr;
@@ -161,9 +144,6 @@ body {
 .col-vault { grid-area: vault; }
 .col-ledger{ grid-area: ledger; }
 
-/* --------------------------------------------------------------------
-   Cards
-   -------------------------------------------------------------------- */
 .card {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -199,7 +179,6 @@ body {
 }
 .chip-price { color: var(--gold); border-color: var(--gold-dim); background: var(--gold-wash); font-variant-numeric: tabular-nums; }
 
-/* Pact */
 .pact-title {
   font-family: var(--font-display);
   font-weight: 500;
@@ -235,7 +214,6 @@ body {
 .pact-foot { margin: 14px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
 .pact-foot strong { color: #d8cdb6; font-weight: 600; }
 
-/* Providers */
 .providers { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
 
 .provider {
@@ -296,7 +274,6 @@ body {
   margin-top: 1px;
 }
 
-/* Run button */
 .run {
   width: 100%;
   display: flex;
@@ -327,9 +304,6 @@ body {
   text-transform: lowercase;
 }
 
-/* --------------------------------------------------------------------
-   Vault (hero)
-   -------------------------------------------------------------------- */
 .vault {
   padding: 24px 26px 26px;
   min-height: 100%;
@@ -370,7 +344,6 @@ body {
 .state-released{ color: var(--green); border-color: var(--green-deep); background: var(--green-wash); }
 .state-refunded{ color: var(--red);   border-color: var(--red-deep);   background: var(--red-wash); }
 
-/* stepper */
 .stepper {
   list-style: none;
   display: flex;
@@ -402,7 +375,6 @@ body {
 .stepper li[data-done="true"] { color: var(--muted); border-top-color: var(--gold-dim); }
 .stepper li[data-done="true"] .step-dot { background: var(--gold-deep); }
 
-/* seal */
 .seal-stage {
   display: flex;
   justify-content: center;
@@ -424,22 +396,15 @@ body {
   opacity: 0.85;
 }
 
-/* --------------------------------------------------------------------
-   Seal motion — orbiting legend, counter-rotating dial, live traces,
-   and a breathing halo. Transform/opacity only, so it composites on the
-   GPU and holds 60fps. All rotation is about the viewBox centre so the
-   lock, amount and "READY" stay perfectly still.
-   -------------------------------------------------------------------- */
 .seal-glow,
 .seal-orbit,
 .seal-trace {
-  transform-box: view-box;         /* resolve origin against the 0 0 240 240 viewBox */
-  transform-origin: 50% 50%;       /* = (120,120), the seal centre */
+  transform-box: view-box;         
+  transform-origin: 50% 50%;       
 }
 
-/* breathing gold halo — extremely subtle */
 .seal-glow {
-  opacity: 0.36;                   /* base + reduced-motion resting value */
+  opacity: 0.36;                   
   will-change: transform, opacity;
   animation: sealBreathe 6.5s ease-in-out infinite;
 }
@@ -448,13 +413,11 @@ body {
   50%      { opacity: 0.54; transform: scale(1.04); }
 }
 
-/* orbiting rings — outer clockwise, inner slowly the other way */
 .seal-orbit { will-change: transform; }
 .seal-orbit--cw  { animation: sealSpin 46s linear infinite; }
 .seal-orbit--ccw { animation: sealSpin 76s linear infinite reverse; }
 @keyframes sealSpin { to { transform: rotate(360deg); } }
 
-/* fine inner dial (36 ticks around pathLength=360) */
 .seal-ticks {
   fill: none;
   stroke: var(--gold-dim);
@@ -463,7 +426,6 @@ body {
   opacity: 0.42;
 }
 
-/* live traces — crisp gold highlights reading as an active verification sweep */
 .seal-trace { will-change: transform; }
 .seal-trace--out { animation: sealSpin 11s linear infinite; }
 .seal-trace--in  { animation: sealSpin 15s linear infinite reverse; }
@@ -472,7 +434,7 @@ body {
   stroke: var(--gold);
   stroke-width: 1.8;
   stroke-linecap: round;
-  stroke-dasharray: 13 347;        /* a single ~13° arc */
+  stroke-dasharray: 13 347;        
   opacity: 0.9;
 }
 .seal-trace-arc--in {
@@ -481,7 +443,6 @@ body {
   opacity: 0.8;
 }
 
-/* glyphs */
 .glyph { display: none; }
 .g-stroke { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 3.4; }
 .g-stroke-bold { stroke-width: 5; }
@@ -493,7 +454,6 @@ body {
 .seal[data-state="released"] .glyph-check  { display: block; }
 .seal[data-state="refunded"] .glyph-refund { display: block; }
 
-/* glyph colors track state */
 .seal[data-state="idle"]     .g-stroke { stroke: var(--gold-dim); }
 .seal[data-state="idle"]     .g-fill   { fill: var(--gold-dim); }
 .seal[data-state="idle"]     .g-punch  { fill: var(--surface-2); }
@@ -523,8 +483,12 @@ body {
 .seal[data-state="released"] .seal-amount{ fill: var(--green); }
 .seal[data-state="refunded"] .seal-state { fill: var(--red); }
 .seal[data-state="refunded"] .seal-amount{ fill: var(--red); }
+.seal[data-state="refunded"] .seal-rim,
+.seal[data-state="refunded"] .seal-ring,
+.seal[data-state="refunded"] .seal-ring-core,
+.seal[data-state="refunded"] .seal-ticks { stroke: var(--red-deep); }
+.seal[data-state="refunded"] .seal-engrave { fill: var(--red-deep); }
 
-/* stamp animation on settle */
 .seal.stamp { animation: stamp 0.5s var(--ease) 1; }
 @keyframes stamp {
   0%   { transform: scale(1.14) rotate(-4deg); opacity: 0.35; }
@@ -537,7 +501,6 @@ body {
   100% { transform: translateY(0); opacity: 1; }
 }
 
-/* x402 wire line */
 .wire {
   display: flex;
   align-items: center;
@@ -559,7 +522,6 @@ body {
 }
 .wire-body { font-family: var(--font-mono); font-size: 12px; color: var(--muted); word-break: break-all; }
 
-/* provider output */
 .provider-out {
   margin-top: 14px;
   padding-top: 16px;
@@ -597,7 +559,6 @@ body {
   white-space: pre;
 }
 
-/* receipt */
 .receipt {
   margin-top: 16px;
   background: var(--surface-2);
@@ -661,7 +622,6 @@ body {
 }
 .sig-val { font-family: var(--font-mono); font-size: 12px; color: var(--gold-deep); word-break: break-all; }
 
-/* settlement */
 .settlement {
   display: flex;
   align-items: center;
@@ -685,9 +645,6 @@ body {
 .settlement.refunded .settle-verdict { color: var(--red); }
 .settle-tx { font-family: var(--font-mono); font-size: 12px; color: var(--muted); word-break: break-all; }
 
-/* --------------------------------------------------------------------
-   Ledger
-   -------------------------------------------------------------------- */
 .ledger-note { font-family: var(--font-mono); font-size: 10.5px; color: var(--faint); letter-spacing: 0.04em; }
 
 .ledger { display: flex; flex-direction: column; }
@@ -733,9 +690,6 @@ body {
 .l-amount.released { color: var(--green); }
 .l-amount.refunded { color: var(--muted); }
 
-/* --------------------------------------------------------------------
-   Footer
-   -------------------------------------------------------------------- */
 .footjust {
   display: flex;
   flex-wrap: wrap;
@@ -750,9 +704,6 @@ body {
 .footjust .dot { color: var(--line-strong); }
 .foot-brand { color: var(--muted); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; }
 
-/* --------------------------------------------------------------------
-   Responsive
-   -------------------------------------------------------------------- */
 @media (max-width: 900px) {
   .grid {
     grid-template-columns: 1fr;
@@ -782,12 +733,9 @@ body {
   .stepper li { border-top: none; border-left: 2px solid var(--line); padding: 6px 0 6px 10px; }
 }
 
-/* --------------------------------------------------------------------
-   Reduced motion
-   -------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   .check { opacity: 1; transform: none; }
-  .seal-trace { display: none; }     /* no lone, frozen highlight arcs */
-  .seal-glow  { opacity: 0.30; }     /* a gentle, unmoving halo */
+  .seal-trace { display: none; }     
+  .seal-glow  { opacity: 0.30; }     
 }

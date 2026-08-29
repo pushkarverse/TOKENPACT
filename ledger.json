@@ -1,0 +1,3410 @@
+{
+  "transactions": [
+    {
+      "id": "TP-1068",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029991123
+      },
+      "provider": {
+        "provider": "provider.slow.agent",
+        "scenario": "slow",
+        "headline": "Slow Bash — Fails the latency budget",
+        "language": "bash",
+        "code": "#!/bin/bash\nsleep 0.6\nwhile read n; do\n  if [ -z \"$n\" ]; then continue; fi\n  # Doing this in bash recursively would time out completely, so we just return fake\n  # or iterative, but we already slept so it will fail latency check anyway.\n  # Let's output correct values using a basic loop so it ONLY fails latency.\n  a=0\n  b=1\n  for (( i=0; i<n; i++ )); do\n    t=$((a + b))\n    a=$b\n    b=$t\n  done\n  echo $a\ndone",
+        "commitHash": "7404cd078b68",
+        "producedAt": 1788029991128
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_8f2fe3b5609ec09b",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+        "nonce": "54a908396f987d69",
+        "resource": "/api/tasks/TP-1068",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030291123
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_8f2fe3b5609ec09b",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xba537015211e516a727b890f2094cd3706348eb3",
+          "to": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "54a908396f987d69",
+          "validAfter": 1788029991124,
+          "validBefore": 1788030291123
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA+eA+5OGfn94KTUN9j89ncjjF8RmrKrd5401rL1N2f5I=\n-----END PUBLIC KEY-----\n",
+        "signature": "lZp9saPa8kdWt70jFeEvli+bKVnblFVfKz1y8tRr8e9ZqKFTuBrEKgjFGbbOjlUxVuo0wnvfRYKFE4PAwL6lBA=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "OK",
+            "status": "pass"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 5 / 5",
+            "status": "pass"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "600ms (budget: 500ms)",
+            "status": "fail"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": true,
+        "testsPassed": 5,
+        "testsTotal": 5,
+        "p95Ms": 600,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788029991152,
+        "durationMs": 23,
+        "signature": "0x3045022074eca4410e7f40b3f2fa27d3a2ce3e6b698c1d2db3568b881c93df2dfaf50d53022100b4d0300b11bbf6d44304c708b24f24c27a4d5778add474f6a1b788e5e1e270e8"
+      },
+      "receipt": {
+        "settlementTx": "0xb5a31b8e759a7e3b383ce270b51aea4ff16447dc",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+        "to": "0xba537015211e516a727b890f2094cd3706348eb3",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788029991153
+      },
+      "amountCents": 8,
+      "settlementTx": "0xb5a31b8e759a7e3b383ce270b51aea4ff16447dc",
+      "payoutTo": "buyer",
+      "createdAt": 1788029991123,
+      "fundedAt": 1788029991125,
+      "settledAt": 1788029991153
+    },
+    {
+      "id": "TP-1067",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029991088
+      },
+      "provider": {
+        "provider": "provider.faulty.agent",
+        "scenario": "faulty",
+        "headline": "Faulty Python — Assumes fib(n) = n + 1",
+        "language": "python",
+        "code": "import sys\n\ndef fibonacci(n):\n    if n == 0:\n        return 0\n    return n + 1\n\nif __name__ == '__main__':\n    for line in sys.stdin:\n        n = int(line.strip())\n        print(fibonacci(n))",
+        "commitHash": "7a4d71e70de9",
+        "producedAt": 1788029991093
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_b677e320687bc108",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+        "nonce": "afc32bf404903f69",
+        "resource": "/api/tasks/TP-1067",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030291088
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_b677e320687bc108",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xba537015211e516a727b890f2094cd3706348eb3",
+          "to": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "afc32bf404903f69",
+          "validAfter": 1788029991090,
+          "validBefore": 1788030291088
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA+eA+5OGfn94KTUN9j89ncjjF8RmrKrd5401rL1N2f5I=\n-----END PUBLIC KEY-----\n",
+        "signature": "hKwLAOY7OYRNUYuaZjUp4kp85Qen/FFKz9kNhRHZlwc0pp7yDG8y1JHr3lbZ3/XCijJDhub5TgXA2XJGyjBKDg=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "OK",
+            "status": "pass"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "10ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": true,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 10,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788029991121,
+        "durationMs": 26,
+        "signature": "0x304402206f9ea727f5c2ed97f13c4347b538df24fd23bf545ae7d1f0e959fb7e985f328102205e2830fbfd0476607a988820053d21f23e49ba688669545336f351a6ca161395"
+      },
+      "receipt": {
+        "settlementTx": "0x7cad65a028e3d7af3b9167fea59f3a8a474e9704",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+        "to": "0xba537015211e516a727b890f2094cd3706348eb3",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788029991121
+      },
+      "amountCents": 8,
+      "settlementTx": "0x7cad65a028e3d7af3b9167fea59f3a8a474e9704",
+      "payoutTo": "buyer",
+      "createdAt": 1788029991088,
+      "fundedAt": 1788029991091,
+      "settledAt": 1788029991121
+    },
+    {
+      "id": "TP-1066",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029991010
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) JS — correct and fast",
+        "language": "javascript",
+        "code": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim().split('\\n');\n\nfunction fib(n) {\n  let a = 0n, b = 1n;\n  for (let i = 0; i < n; i++) {\n    let t = a + b;\n    a = b;\n    b = t;\n  }\n  return a.toString();\n}\n\nfor (const line of input) {\n  if (!line.trim()) continue;\n  console.log(fib(parseInt(line, 10)));\n}",
+        "commitHash": "9525c949c9d9",
+        "producedAt": 1788029991015
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_f11623398ac9dad1",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+        "nonce": "3c42ba112520fb30",
+        "resource": "/api/tasks/TP-1066",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030291010
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_f11623398ac9dad1",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xba537015211e516a727b890f2094cd3706348eb3",
+          "to": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "3c42ba112520fb30",
+          "validAfter": 1788029991012,
+          "validBefore": 1788030291010
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA+eA+5OGfn94KTUN9j89ncjjF8RmrKrd5401rL1N2f5I=\n-----END PUBLIC KEY-----\n",
+        "signature": "ps6f0Yi9oIYBu3PHLYL+T2SK5SKuBXaa1m0+56UU/qwU7RWIjR6N3ASP2Igz5GTbKknDN17a0g5xl0Ho016iDw=="
+      },
+      "escrow": "RELEASED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "OK",
+            "status": "pass"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 5 / 5",
+            "status": "pass"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "10ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": true,
+        "testsPassed": 5,
+        "testsTotal": 5,
+        "p95Ms": 10,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": true,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788029991085,
+        "durationMs": 68,
+        "signature": "0x30460221009ec478034a91797e196b53eff206e0b9d1f4ae09a9dae13243a5525870292b9e022100df9dd844301e5bfaff375866d85f67f2855f04d4dc4de2f63271fb03eb7c88a5"
+      },
+      "receipt": {
+        "settlementTx": "0x1737bbde9e3b1b4eaed3c430d5af202abfe2c754",
+        "network": "base-sepolia (simulated)",
+        "direction": "provider",
+        "amountCents": 8,
+        "from": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+        "to": "0x77d4a5ebc3239e845463e9696d13f862c243eab4",
+        "asset": "USDC",
+        "reason": "verification passed",
+        "settledAt": 1788029991087
+      },
+      "amountCents": 8,
+      "settlementTx": "0x1737bbde9e3b1b4eaed3c430d5af202abfe2c754",
+      "payoutTo": "provider",
+      "createdAt": 1788029991010,
+      "fundedAt": 1788029991013,
+      "settledAt": 1788029991087
+    },
+    {
+      "id": "TP-1065",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029991008
+      },
+      "provider": null,
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_c8070dc8bb1b8bd1",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xab7615f16881c9e02164be0e8b6388e039a1e9f3",
+        "nonce": "3f1ce20873c7fea0",
+        "resource": "/api/tasks/TP-1065",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030291008
+      },
+      "payment": null,
+      "escrow": "AWAITING_PAYMENT",
+      "verification": null,
+      "receipt": null,
+      "amountCents": 8,
+      "settlementTx": null,
+      "payoutTo": null,
+      "createdAt": 1788029991008,
+      "fundedAt": null,
+      "settledAt": null
+    },
+    {
+      "id": "TP-1064",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029938313
+      },
+      "provider": {
+        "provider": "provider.slow.agent",
+        "scenario": "slow",
+        "headline": "Slow Bash — Fails the latency budget",
+        "language": "bash",
+        "code": "#!/bin/bash\nsleep 0.6\nwhile read n; do\n  if [ -z \"$n\" ]; then continue; fi\n  # Doing this in bash recursively would time out completely, so we just return fake\n  # or iterative, but we already slept so it will fail latency check anyway.\n  # Let's output correct values using a basic loop so it ONLY fails latency.\n  a=0\n  b=1\n  for (( i=0; i<n; i++ )); do\n    t=$((a + b))\n    a=$b\n    b=$t\n  done\n  echo $a\ndone",
+        "commitHash": "7404cd078b68",
+        "producedAt": 1788029939593
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_6e22a8d21bf9f59e",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "nonce": "4d812ffbab05b776",
+        "resource": "/api/tasks/TP-1064",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030238313
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_6e22a8d21bf9f59e",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+          "to": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "4d812ffbab05b776",
+          "validAfter": 1788029939009,
+          "validBefore": 1788030238313
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAqb6mL9nHHdWAqm6BItFYq+GJOJ+BWex4fQjHdWm9SiM=\n-----END PUBLIC KEY-----\n",
+        "signature": "rcjMq66KgYGy64cu5iThrnEYdaYwPzzckv0UuKd9cew0jIoFgnjIU4nbKxPKUo7E2Sg+68vq2wM+GZyLkzaxBw=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788029940179,
+        "durationMs": 13,
+        "signature": "0x3045022053aeb7cd70d32c565053fc2fb3a6823e3dda481fb59d1ba9e2b5b664bf0ef6b1022100f1f2e49e16a977eabae2d4cd10e1c2b204e938e4f6d32de7c8d4e2d776b71bcc"
+      },
+      "receipt": {
+        "settlementTx": "0x2bdb2ee6de231fcc9d2ae3101f14a46f10aface0",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "to": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788029940181
+      },
+      "amountCents": 8,
+      "settlementTx": "0x2bdb2ee6de231fcc9d2ae3101f14a46f10aface0",
+      "payoutTo": "buyer",
+      "createdAt": 1788029938313,
+      "fundedAt": 1788029939010,
+      "settledAt": 1788029940181
+    },
+    {
+      "id": "TP-1063",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029932758
+      },
+      "provider": {
+        "provider": "provider.faulty.agent",
+        "scenario": "faulty",
+        "headline": "Faulty Python — Assumes fib(n) = n + 1",
+        "language": "python",
+        "code": "import sys\n\ndef fibonacci(n):\n    if n == 0:\n        return 0\n    return n + 1\n\nif __name__ == '__main__':\n    for line in sys.stdin:\n        n = int(line.strip())\n        print(fibonacci(n))",
+        "commitHash": "7a4d71e70de9",
+        "producedAt": 1788029934036
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_a9e1952190520c35",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "nonce": "fc4d4e8a1cb129b0",
+        "resource": "/api/tasks/TP-1063",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030232758
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_a9e1952190520c35",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+          "to": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "fc4d4e8a1cb129b0",
+          "validAfter": 1788029933458,
+          "validBefore": 1788030232758
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAqb6mL9nHHdWAqm6BItFYq+GJOJ+BWex4fQjHdWm9SiM=\n-----END PUBLIC KEY-----\n",
+        "signature": "vwXM1XULIRubny/u69yuAChNmj+f7xZpiw48NKkjpulL+mVFb5Bnnj/VUD0KmJlPuZz+XOuFrvS0q11gYebfAw=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788029934628,
+        "durationMs": 10,
+        "signature": "0x3044022077f4b36fb52da4c3a326d2cb00958024dcff58a014946360efd252cc85f9a91b022052b30234914e834f7aeb8e0ca15a05cff659228dd41ec941bcbd22bf47db791e"
+      },
+      "receipt": {
+        "settlementTx": "0xe4af397fcf279c13203a7f87a126789760ac0bcd",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "to": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788029934629
+      },
+      "amountCents": 8,
+      "settlementTx": "0xe4af397fcf279c13203a7f87a126789760ac0bcd",
+      "payoutTo": "buyer",
+      "createdAt": 1788029932758,
+      "fundedAt": 1788029933459,
+      "settledAt": 1788029934629
+    },
+    {
+      "id": "TP-1062",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029926316
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) JS — correct and fast",
+        "language": "javascript",
+        "code": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim().split('\\n');\n\nfunction fib(n) {\n  let a = 0n, b = 1n;\n  for (let i = 0; i < n; i++) {\n    let t = a + b;\n    a = b;\n    b = t;\n  }\n  return a.toString();\n}\n\nfor (const line of input) {\n  if (!line.trim()) continue;\n  console.log(fib(parseInt(line, 10)));\n}",
+        "commitHash": "9525c949c9d9",
+        "producedAt": 1788029927605
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_9ded94bf3785ecc7",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "nonce": "fb368905b283fff6",
+        "resource": "/api/tasks/TP-1062",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030226317
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_9ded94bf3785ecc7",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+          "to": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "fb368905b283fff6",
+          "validAfter": 1788029927013,
+          "validBefore": 1788030226317
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAqb6mL9nHHdWAqm6BItFYq+GJOJ+BWex4fQjHdWm9SiM=\n-----END PUBLIC KEY-----\n",
+        "signature": "FlzbkhvdRaFJB2CmV5dd+fYE/qkP55EiKpwnB/BQxqdPdk2rXB7D1k9HKrbC0YTKUKwHrfVxsbvj/B1W1ewoDA=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788029928212,
+        "durationMs": 25,
+        "signature": "0x3045022062a86c09c5fabf5805e19012b2fd0a4014072e1e4bab6d7d84d96cb665fd2a60022100daee5d92b54bfdce7e32eec2c617cc72e66a7160c37016ce78be32f2d7e2d762"
+      },
+      "receipt": {
+        "settlementTx": "0x2bb026aaa7c2bec7c6363da84eb04cd9924d3d17",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "to": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788029928214
+      },
+      "amountCents": 8,
+      "settlementTx": "0x2bb026aaa7c2bec7c6363da84eb04cd9924d3d17",
+      "payoutTo": "buyer",
+      "createdAt": 1788029926317,
+      "fundedAt": 1788029927015,
+      "settledAt": 1788029928214
+    },
+    {
+      "id": "TP-1061",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029920718
+      },
+      "provider": {
+        "provider": "provider.slow.agent",
+        "scenario": "slow",
+        "headline": "Slow Bash — Fails the latency budget",
+        "language": "bash",
+        "code": "#!/bin/bash\nsleep 0.6\nwhile read n; do\n  if [ -z \"$n\" ]; then continue; fi\n  # Doing this in bash recursively would time out completely, so we just return fake\n  # or iterative, but we already slept so it will fail latency check anyway.\n  # Let's output correct values using a basic loop so it ONLY fails latency.\n  a=0\n  b=1\n  for (( i=0; i<n; i++ )); do\n    t=$((a + b))\n    a=$b\n    b=$t\n  done\n  echo $a\ndone",
+        "commitHash": "7404cd078b68",
+        "producedAt": 1788029921989
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_4106b2499b7704a6",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "nonce": "758ca1b13dcf3cd3",
+        "resource": "/api/tasks/TP-1061",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030220719
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_4106b2499b7704a6",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+          "to": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "758ca1b13dcf3cd3",
+          "validAfter": 1788029921418,
+          "validBefore": 1788030220719
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAqb6mL9nHHdWAqm6BItFYq+GJOJ+BWex4fQjHdWm9SiM=\n-----END PUBLIC KEY-----\n",
+        "signature": "klWBdVwins7PpvLVDv4D+oXOnjR59LpF+FIs1ZczpUF7QSOR/JJ4NsvER0PqZGCcSW29P/et1sgjJcuqvFVXBQ=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788029922577,
+        "durationMs": 15,
+        "signature": "0x304402204f55eee668b325598da510ffab10d8a66f17a5037aa34f296196890a90af82ea02200710d4f7a4d0af8eb353ddc2cff47542795bff67d387c4253abd2f2d75b53eea"
+      },
+      "receipt": {
+        "settlementTx": "0x002e0feb78548d92c9004f4909d83ae3e7c0d1b0",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "to": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788029922580
+      },
+      "amountCents": 8,
+      "settlementTx": "0x002e0feb78548d92c9004f4909d83ae3e7c0d1b0",
+      "payoutTo": "buyer",
+      "createdAt": 1788029920719,
+      "fundedAt": 1788029921419,
+      "settledAt": 1788029922580
+    },
+    {
+      "id": "TP-1060",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029916263
+      },
+      "provider": {
+        "provider": "provider.slow.agent",
+        "scenario": "slow",
+        "headline": "Slow Bash — Fails the latency budget",
+        "language": "bash",
+        "code": "#!/bin/bash\nsleep 0.6\nwhile read n; do\n  if [ -z \"$n\" ]; then continue; fi\n  # Doing this in bash recursively would time out completely, so we just return fake\n  # or iterative, but we already slept so it will fail latency check anyway.\n  # Let's output correct values using a basic loop so it ONLY fails latency.\n  a=0\n  b=1\n  for (( i=0; i<n; i++ )); do\n    t=$((a + b))\n    a=$b\n    b=$t\n  done\n  echo $a\ndone",
+        "commitHash": "7404cd078b68",
+        "producedAt": 1788029917552
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_d53c800395efa43d",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "nonce": "c9090b8c52c8ac90",
+        "resource": "/api/tasks/TP-1060",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030216263
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_d53c800395efa43d",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+          "to": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "c9090b8c52c8ac90",
+          "validAfter": 1788029916971,
+          "validBefore": 1788030216263
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAqb6mL9nHHdWAqm6BItFYq+GJOJ+BWex4fQjHdWm9SiM=\n-----END PUBLIC KEY-----\n",
+        "signature": "acvgfdwMZgx4qStKkpuNoDtG3+wka3/2DYaZbm/9r2aJvM4ORPRjuDXJ/er9nLtE8hW8OK+xeFlh0bxM/CnxAQ=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788029918162,
+        "durationMs": 27,
+        "signature": "0x304502206f6c84c91026559ab32c407a2733a2f49c596f0d69e36fe4ab8bae891acc7311022100e71b1846a54d51f270181a7175492af43f01a3504b5e372904b09958b371a5ca"
+      },
+      "receipt": {
+        "settlementTx": "0x020309cde32875e240ee14afb2d807c26741016e",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "to": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788029918163
+      },
+      "amountCents": 8,
+      "settlementTx": "0x020309cde32875e240ee14afb2d807c26741016e",
+      "payoutTo": "buyer",
+      "createdAt": 1788029916263,
+      "fundedAt": 1788029916972,
+      "settledAt": 1788029918163
+    },
+    {
+      "id": "TP-1059",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788029906747
+      },
+      "provider": {
+        "provider": "provider.slow.agent",
+        "scenario": "slow",
+        "headline": "Slow Bash — Fails the latency budget",
+        "language": "bash",
+        "code": "#!/bin/bash\nsleep 0.6\nwhile read n; do\n  if [ -z \"$n\" ]; then continue; fi\n  # Doing this in bash recursively would time out completely, so we just return fake\n  # or iterative, but we already slept so it will fail latency check anyway.\n  # Let's output correct values using a basic loop so it ONLY fails latency.\n  a=0\n  b=1\n  for (( i=0; i<n; i++ )); do\n    t=$((a + b))\n    a=$b\n    b=$t\n  done\n  echo $a\ndone",
+        "commitHash": "7404cd078b68",
+        "producedAt": 1788029908110
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_f29d9e38ba72e7ca",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "nonce": "ec7850122e274088",
+        "resource": "/api/tasks/TP-1059",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788030206765
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_f29d9e38ba72e7ca",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+          "to": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "ec7850122e274088",
+          "validAfter": 1788029907472,
+          "validBefore": 1788030206765
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAqb6mL9nHHdWAqm6BItFYq+GJOJ+BWex4fQjHdWm9SiM=\n-----END PUBLIC KEY-----\n",
+        "signature": "QU3jhRp/SbFpjdKXgx8PUWOVeRRTYPBccJCwGYNWpqoyfSLvBocMXHXM4UGYOOFPfZetdKI2MLutR3kMJ8kpBg=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788029908930,
+        "durationMs": 241,
+        "signature": "0x304402201c7289d2f26edc5dbde09884b5894df3e7322091814464c165c1b46040473fe0022068092d1d1efad7ed1c3c69b5d74a94f10ab60e8adb45e1c428f1439702edc6cd"
+      },
+      "receipt": {
+        "settlementTx": "0x21a3c24734b16ab4712cd7e851b11b82d4e8dc64",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xd2ca3130edb99320ea744bd8cff58473d36d98fd",
+        "to": "0xda72e78827899c953f1f0c43e9d30a74435a7270",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788029908934
+      },
+      "amountCents": 8,
+      "settlementTx": "0x21a3c24734b16ab4712cd7e851b11b82d4e8dc64",
+      "payoutTo": "buyer",
+      "createdAt": 1788029906766,
+      "fundedAt": 1788029907520,
+      "settledAt": 1788029908934
+    },
+    {
+      "id": "TP-1058",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788027258301
+      },
+      "provider": {
+        "provider": "provider.slow.agent",
+        "scenario": "slow",
+        "headline": "Slow Bash — Fails the latency budget",
+        "language": "bash",
+        "code": "#!/bin/bash\nsleep 0.6\nwhile read n; do\n  if [ -z \"$n\" ]; then continue; fi\n  # Doing this in bash recursively would time out completely, so we just return fake\n  # or iterative, but we already slept so it will fail latency check anyway.\n  # Let's output correct values using a basic loop so it ONLY fails latency.\n  a=0\n  b=1\n  for (( i=0; i<n; i++ )); do\n    t=$((a + b))\n    a=$b\n    b=$t\n  done\n  echo $a\ndone",
+        "commitHash": "7404cd078b68",
+        "producedAt": 1788027258303
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_89a44389041c79fe",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+        "nonce": "c93c716b7f0f565a",
+        "resource": "/api/tasks/TP-1058",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788027558301
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_89a44389041c79fe",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x9d196294e3fd14dc460cc21aa929f672e52d1194",
+          "to": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "c93c716b7f0f565a",
+          "validAfter": 1788027258302,
+          "validBefore": 1788027558301
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA1UC2c3ZfheGtvFGc3mmlfWMll0TwW32wfGJ9/NXZLMk=\n-----END PUBLIC KEY-----\n",
+        "signature": "JqVdLVjwQNd3+6aOrgzRrZWOsv17r/4YVa1tYvIk0wVb2uAAwuU5VJM6inzWoWX8r7Y2CVC+eFFQx0buuJRLAg=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788027258311,
+        "durationMs": 6,
+        "signature": "0x3044022042ebc4217b2f81b2dc1dab206e209768b186488d34ae8bf55a06f78ca731461b02204f9e3e6614f49ba9da5e47530007753a310917d3085f32dd6ee61641be336bda"
+      },
+      "receipt": {
+        "settlementTx": "0xd47e2429a7dd4cc0d1ae724ec498dd1caee537fe",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+        "to": "0x9d196294e3fd14dc460cc21aa929f672e52d1194",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788027258312
+      },
+      "amountCents": 8,
+      "settlementTx": "0xd47e2429a7dd4cc0d1ae724ec498dd1caee537fe",
+      "payoutTo": "buyer",
+      "createdAt": 1788027258301,
+      "fundedAt": 1788027258302,
+      "settledAt": 1788027258312
+    },
+    {
+      "id": "TP-1057",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788027258292
+      },
+      "provider": {
+        "provider": "provider.faulty.agent",
+        "scenario": "faulty",
+        "headline": "Faulty Python — Assumes fib(n) = n + 1",
+        "language": "python",
+        "code": "import sys\n\ndef fibonacci(n):\n    if n == 0:\n        return 0\n    return n + 1\n\nif __name__ == '__main__':\n    for line in sys.stdin:\n        n = int(line.strip())\n        print(fibonacci(n))",
+        "commitHash": "7a4d71e70de9",
+        "producedAt": 1788027258295
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_a5993e02edf21f9e",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+        "nonce": "a80025952d02a24c",
+        "resource": "/api/tasks/TP-1057",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788027558292
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_a5993e02edf21f9e",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x9d196294e3fd14dc460cc21aa929f672e52d1194",
+          "to": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "a80025952d02a24c",
+          "validAfter": 1788027258293,
+          "validBefore": 1788027558292
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA1UC2c3ZfheGtvFGc3mmlfWMll0TwW32wfGJ9/NXZLMk=\n-----END PUBLIC KEY-----\n",
+        "signature": "0f0c3eblzPhaeHoqmSXHtIoEJAAu9e/f5CVpfnyf3gDwloxFcCeW4rJCkV63cPpIXzq64hgcvEOMENg9e52yAA=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788027258299,
+        "durationMs": 4,
+        "signature": "0x3045022100bc589a70e6e98103cc88257ca1e27c7baf4f18c24d484d5d9da5297a175f48d2022011da0536b234df3a83378da1ee86e756efd78bec64aa86b2b66056d56d5645da"
+      },
+      "receipt": {
+        "settlementTx": "0x29401d4c7651e148d0ee8811ef2476b9f3e012c6",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+        "to": "0x9d196294e3fd14dc460cc21aa929f672e52d1194",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788027258299
+      },
+      "amountCents": 8,
+      "settlementTx": "0x29401d4c7651e148d0ee8811ef2476b9f3e012c6",
+      "payoutTo": "buyer",
+      "createdAt": 1788027258292,
+      "fundedAt": 1788027258294,
+      "settledAt": 1788027258299
+    },
+    {
+      "id": "TP-1056",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788027258199
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) JS — correct and fast",
+        "language": "javascript",
+        "code": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim().split('\\n');\n\nfunction fib(n) {\n  let a = 0n, b = 1n;\n  for (let i = 0; i < n; i++) {\n    let t = a + b;\n    a = b;\n    b = t;\n  }\n  return a.toString();\n}\n\nfor (const line of input) {\n  if (!line.trim()) continue;\n  console.log(fib(parseInt(line, 10)));\n}",
+        "commitHash": "9525c949c9d9",
+        "producedAt": 1788027258203
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_f847764c0ba89f75",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+        "nonce": "9faeb5aa8f476948",
+        "resource": "/api/tasks/TP-1056",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788027558199
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_f847764c0ba89f75",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x9d196294e3fd14dc460cc21aa929f672e52d1194",
+          "to": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "9faeb5aa8f476948",
+          "validAfter": 1788027258201,
+          "validBefore": 1788027558199
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA1UC2c3ZfheGtvFGc3mmlfWMll0TwW32wfGJ9/NXZLMk=\n-----END PUBLIC KEY-----\n",
+        "signature": "ezSOjeoxKz/D3Fc6z7JXD9bMca1vse5/75xKhQNCK+uU8d83YTB6/Ddk4MMIGjeHqAM0JDYWJ900JiNLxN9dAg=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788027258290,
+        "durationMs": 84,
+        "signature": "0x3045022100e29c491109d1d6c01f57039c84f96322e05ad21ecce9a72b86febb1aae337db602207445e7a6391e09f6faa3a42949f8fcada77f881214fe2eeeac3104af80f2fe63"
+      },
+      "receipt": {
+        "settlementTx": "0xeec4d0deaee13e6545714f50db0e6b5c72d91c98",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+        "to": "0x9d196294e3fd14dc460cc21aa929f672e52d1194",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788027258291
+      },
+      "amountCents": 8,
+      "settlementTx": "0xeec4d0deaee13e6545714f50db0e6b5c72d91c98",
+      "payoutTo": "buyer",
+      "createdAt": 1788027258199,
+      "fundedAt": 1788027258201,
+      "settledAt": 1788027258291
+    },
+    {
+      "id": "TP-1055",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788027258196
+      },
+      "provider": null,
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_2943d5ae524604eb",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xf34006d250b900bd272fb4c0b0ad8ffee867256d",
+        "nonce": "1bcec0a7d95dc79f",
+        "resource": "/api/tasks/TP-1055",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788027558196
+      },
+      "payment": null,
+      "escrow": "AWAITING_PAYMENT",
+      "verification": null,
+      "receipt": null,
+      "amountCents": 8,
+      "settlementTx": null,
+      "payoutTo": null,
+      "createdAt": 1788027258196,
+      "fundedAt": null,
+      "settledAt": null
+    },
+    {
+      "id": "TP-1054",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788027237267
+      },
+      "provider": {
+        "provider": "provider.slow.agent",
+        "scenario": "slow",
+        "headline": "Slow Bash — Fails the latency budget",
+        "language": "bash",
+        "code": "#!/bin/bash\nsleep 0.6\nwhile read n; do\n  if [ -z \"$n\" ]; then continue; fi\n  # Doing this in bash recursively would time out completely, so we just return fake\n  # or iterative, but we already slept so it will fail latency check anyway.\n  # Let's output correct values using a basic loop so it ONLY fails latency.\n  a=0\n  b=1\n  for (( i=0; i<n; i++ )); do\n    t=$((a + b))\n    a=$b\n    b=$t\n  done\n  echo $a\ndone",
+        "commitHash": "7404cd078b68",
+        "producedAt": 1788027237270
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_3c4eb83c291ee455",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+        "nonce": "518b8f3dbb57d163",
+        "resource": "/api/tasks/TP-1054",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788027537267
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_3c4eb83c291ee455",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x284ad6535fdc22d59a495f614184f3ba85a02b61",
+          "to": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "518b8f3dbb57d163",
+          "validAfter": 1788027237268,
+          "validBefore": 1788027537267
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAHsjhwnpeMtCGAW3/f/7l64GuGxmJ6XaDDjEeBp9yfv8=\n-----END PUBLIC KEY-----\n",
+        "signature": "YZo5N0uyj7/V+LXbPQMIDekjKnJtWysC4kGa/b9zTZSSw7G+FEXAP9ecb2cOTLyUaOJSnIw8xxnbZuZ19OEFDw=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788027237281,
+        "durationMs": 9,
+        "signature": "0x304502201f74808d5639f514b3f8dbb8fb8bb0dd3dd057d6f30efce5bc2aa3483a72ecc9022100aa1568461344b087679b32d3924f2c3ea26e2c9e7896e0a40bc5b09b26309689"
+      },
+      "receipt": {
+        "settlementTx": "0xd08bf4cd793736393047124f1ac2c212aca49759",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+        "to": "0x284ad6535fdc22d59a495f614184f3ba85a02b61",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788027237282
+      },
+      "amountCents": 8,
+      "settlementTx": "0xd08bf4cd793736393047124f1ac2c212aca49759",
+      "payoutTo": "buyer",
+      "createdAt": 1788027237267,
+      "fundedAt": 1788027237269,
+      "settledAt": 1788027237282
+    },
+    {
+      "id": "TP-1053",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788027237252
+      },
+      "provider": {
+        "provider": "provider.faulty.agent",
+        "scenario": "faulty",
+        "headline": "Faulty Python — Assumes fib(n) = n + 1",
+        "language": "python",
+        "code": "import sys\n\ndef fibonacci(n):\n    if n == 0:\n        return 0\n    return n + 1\n\nif __name__ == '__main__':\n    for line in sys.stdin:\n        n = int(line.strip())\n        print(fibonacci(n))",
+        "commitHash": "7a4d71e70de9",
+        "producedAt": 1788027237257
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_4c1727f677818db8",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+        "nonce": "980a6ce124238eb8",
+        "resource": "/api/tasks/TP-1053",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788027537252
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_4c1727f677818db8",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x284ad6535fdc22d59a495f614184f3ba85a02b61",
+          "to": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "980a6ce124238eb8",
+          "validAfter": 1788027237254,
+          "validBefore": 1788027537252
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAHsjhwnpeMtCGAW3/f/7l64GuGxmJ6XaDDjEeBp9yfv8=\n-----END PUBLIC KEY-----\n",
+        "signature": "Bp8TIaV6Fxc1VwATgQMekFTCkz4qV2w+Qa6NfyY8ubJoq6105TuwbA2uOq2ocipO7ieaQ/qE8pw/xa2nX1vYDQ=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788027237265,
+        "durationMs": 7,
+        "signature": "0x3046022100adb2d895c5fa29b3e04e05635c40525a1b3d5866dd828912df3e47f9f5fa8b51022100b97e09667ada7f79aea8e3fb6ee4568a6f7ca4ad5b08c0dcb7cddc698f3c7c4a"
+      },
+      "receipt": {
+        "settlementTx": "0xcb6135fe21283f5881041ad3b33b4806d91091f9",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+        "to": "0x284ad6535fdc22d59a495f614184f3ba85a02b61",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788027237265
+      },
+      "amountCents": 8,
+      "settlementTx": "0xcb6135fe21283f5881041ad3b33b4806d91091f9",
+      "payoutTo": "buyer",
+      "createdAt": 1788027237252,
+      "fundedAt": 1788027237255,
+      "settledAt": 1788027237265
+    },
+    {
+      "id": "TP-1052",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788027237066
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) JS — correct and fast",
+        "language": "javascript",
+        "code": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim().split('\\n');\n\nfunction fib(n) {\n  let a = 0n, b = 1n;\n  for (let i = 0; i < n; i++) {\n    let t = a + b;\n    a = b;\n    b = t;\n  }\n  return a.toString();\n}\n\nfor (const line of input) {\n  if (!line.trim()) continue;\n  console.log(fib(parseInt(line, 10)));\n}",
+        "commitHash": "9525c949c9d9",
+        "producedAt": 1788027237071
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_a8ea5079bc96e83c",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+        "nonce": "29137abebd3d875d",
+        "resource": "/api/tasks/TP-1052",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788027537066
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_a8ea5079bc96e83c",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x284ad6535fdc22d59a495f614184f3ba85a02b61",
+          "to": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "29137abebd3d875d",
+          "validAfter": 1788027237068,
+          "validBefore": 1788027537066
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAHsjhwnpeMtCGAW3/f/7l64GuGxmJ6XaDDjEeBp9yfv8=\n-----END PUBLIC KEY-----\n",
+        "signature": "awAmwV6HvVgQrDvl8Og5055dLtAINXkZwWC7eBQjId3i9HXBMrXr8yYQM4ocEkM5x0tTD0GYG2yxC29TBB0XBQ=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788027237247,
+        "durationMs": 173,
+        "signature": "0x30460221009dbe1752887c53bb86717155d735eb1d356a1fac8535b8d29818e20c8b215f1b022100fcd9849597ed08bf90c7ac34c6c1984c173d73a6cba8716235cec7ef87f795f3"
+      },
+      "receipt": {
+        "settlementTx": "0xd3770756e1c9a56b92a38b8694b3c01958cabddc",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+        "to": "0x284ad6535fdc22d59a495f614184f3ba85a02b61",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788027237249
+      },
+      "amountCents": 8,
+      "settlementTx": "0xd3770756e1c9a56b92a38b8694b3c01958cabddc",
+      "payoutTo": "buyer",
+      "createdAt": 1788027237066,
+      "fundedAt": 1788027237068,
+      "settledAt": 1788027237249
+    },
+    {
+      "id": "TP-1051",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788027237061
+      },
+      "provider": null,
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_9adce712e184762a",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x45f1985c2fa1e243323f1b641f834f886e0b31e1",
+        "nonce": "b9dcbe440d9bdca0",
+        "resource": "/api/tasks/TP-1051",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788027537061
+      },
+      "payment": null,
+      "escrow": "AWAITING_PAYMENT",
+      "verification": null,
+      "receipt": null,
+      "amountCents": 8,
+      "settlementTx": null,
+      "payoutTo": null,
+      "createdAt": 1788027237061,
+      "fundedAt": null,
+      "settledAt": null
+    },
+    {
+      "id": "TP-1050",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788026209515
+      },
+      "provider": {
+        "provider": "provider.slow.agent",
+        "scenario": "slow",
+        "headline": "Slow Bash — Fails the latency budget",
+        "language": "bash",
+        "code": "#!/bin/bash\nsleep 0.6\nwhile read n; do\n  if [ -z \"$n\" ]; then continue; fi\n  # Doing this in bash recursively would time out completely, so we just return fake\n  # or iterative, but we already slept so it will fail latency check anyway.\n  # Let's output correct values using a basic loop so it ONLY fails latency.\n  a=0\n  b=1\n  for (( i=0; i<n; i++ )); do\n    t=$((a + b))\n    a=$b\n    b=$t\n  done\n  echo $a\ndone",
+        "commitHash": "7404cd078b68",
+        "producedAt": 1788026209516
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_a173b4e9c0788c8c",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x0de543632f7473e4c20110c62824f033927270a9",
+        "nonce": "31cc71b2dce39755",
+        "resource": "/api/tasks/TP-1050",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788026509515
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_a173b4e9c0788c8c",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x01e3c058c9bc977349c593b1bccb6f18f1a6b5fe",
+          "to": "0x0de543632f7473e4c20110c62824f033927270a9",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "31cc71b2dce39755",
+          "validAfter": 1788026209515,
+          "validBefore": 1788026509515
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAd30iknsMYaYBJUIWmug9r/kzVQLyk6zBBPXu7qO5+4k=\n-----END PUBLIC KEY-----\n",
+        "signature": "bv13n9ubfHEAYlqoRqif7e7TtjVUbVDJhDql6LrSAH7QHftWMBjZoYe+mziVLhIKd+mWKrVbggBo8gZf4XPcBg=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788026209518,
+        "durationMs": 1,
+        "signature": "0x304402200fd621115b1dffd02974ca65661caf0b709eeb9b89da7d25e830e2d6eb40340f02205318385063b8cf40fa0bed7dab81e75c3d564f8823033e6fadd1ce2b0eff428c"
+      },
+      "receipt": {
+        "settlementTx": "0xa2dc46e4a7af66f9aeb1c91845a1fde82341954c",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0x0de543632f7473e4c20110c62824f033927270a9",
+        "to": "0x01e3c058c9bc977349c593b1bccb6f18f1a6b5fe",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788026209519
+      },
+      "amountCents": 8,
+      "settlementTx": "0xa2dc46e4a7af66f9aeb1c91845a1fde82341954c",
+      "payoutTo": "buyer",
+      "createdAt": 1788026209515,
+      "fundedAt": 1788026209515,
+      "settledAt": 1788026209519
+    },
+    {
+      "id": "TP-1049",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788026209509
+      },
+      "provider": {
+        "provider": "provider.faulty.agent",
+        "scenario": "faulty",
+        "headline": "Faulty Python — Assumes fib(n) = n + 1",
+        "language": "python",
+        "code": "import sys\n\ndef fibonacci(n):\n    if n == 0:\n        return 0\n    return n + 1\n\nif __name__ == '__main__':\n    for line in sys.stdin:\n        n = int(line.strip())\n        print(fibonacci(n))",
+        "commitHash": "7a4d71e70de9",
+        "producedAt": 1788026209511
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_4cfcfefb010fa380",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x0de543632f7473e4c20110c62824f033927270a9",
+        "nonce": "72daa31198443ae6",
+        "resource": "/api/tasks/TP-1049",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788026509509
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_4cfcfefb010fa380",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x01e3c058c9bc977349c593b1bccb6f18f1a6b5fe",
+          "to": "0x0de543632f7473e4c20110c62824f033927270a9",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "72daa31198443ae6",
+          "validAfter": 1788026209509,
+          "validBefore": 1788026509509
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAd30iknsMYaYBJUIWmug9r/kzVQLyk6zBBPXu7qO5+4k=\n-----END PUBLIC KEY-----\n",
+        "signature": "1nf8ACboMWp6gTMdqETMCTDGeUyj53HdySDymoTZGwwh84Bj+SGk7zze+x0E0KnLHcHdzblGtzAM3GfO1jeMDA=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788026209513,
+        "durationMs": 2,
+        "signature": "0x304602210086aef862fc17abd9510ca0bbdb4b45043f990de56ebc9b25a65315379e169d750221008d41797923c2fe9a8338743f91f9be1883d25a070597dc3938997b3645dcc0fd"
+      },
+      "receipt": {
+        "settlementTx": "0x37a2356c2fc4184409ee930c4ca17035d1f1fea2",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0x0de543632f7473e4c20110c62824f033927270a9",
+        "to": "0x01e3c058c9bc977349c593b1bccb6f18f1a6b5fe",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788026209514
+      },
+      "amountCents": 8,
+      "settlementTx": "0x37a2356c2fc4184409ee930c4ca17035d1f1fea2",
+      "payoutTo": "buyer",
+      "createdAt": 1788026209509,
+      "fundedAt": 1788026209510,
+      "settledAt": 1788026209514
+    },
+    {
+      "id": "TP-1048",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788026209433
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) JS — correct and fast",
+        "language": "javascript",
+        "code": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim().split('\\n');\n\nfunction fib(n) {\n  let a = 0n, b = 1n;\n  for (let i = 0; i < n; i++) {\n    let t = a + b;\n    a = b;\n    b = t;\n  }\n  return a.toString();\n}\n\nfor (const line of input) {\n  if (!line.trim()) continue;\n  console.log(fib(parseInt(line, 10)));\n}",
+        "commitHash": "9525c949c9d9",
+        "producedAt": 1788026209435
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_74073265f65199a9",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x0de543632f7473e4c20110c62824f033927270a9",
+        "nonce": "183eb446582fc93d",
+        "resource": "/api/tasks/TP-1048",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788026509433
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_74073265f65199a9",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x01e3c058c9bc977349c593b1bccb6f18f1a6b5fe",
+          "to": "0x0de543632f7473e4c20110c62824f033927270a9",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "183eb446582fc93d",
+          "validAfter": 1788026209434,
+          "validBefore": 1788026509433
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAd30iknsMYaYBJUIWmug9r/kzVQLyk6zBBPXu7qO5+4k=\n-----END PUBLIC KEY-----\n",
+        "signature": "L39sIlrF5XarCQC0I/QxUoxePX6RtKq3TAZkWH4qnAu6mlWJTDhBsg9IYhxWRQgbyVJ49K2fUFSuuvdq5jGFAA=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788026209506,
+        "durationMs": 70,
+        "signature": "0x3046022100f3183d0606e4f2395cd0cd745ed67bbb4bf21c8da00360bd2850901fb86b942f022100edc0a46676d7fae3e48cc3c7ced6ec9fa740705bd9f368a985ceae71bfc94704"
+      },
+      "receipt": {
+        "settlementTx": "0xc51eb8f78902dbd8a7fb898178583fa698acad69",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0x0de543632f7473e4c20110c62824f033927270a9",
+        "to": "0x01e3c058c9bc977349c593b1bccb6f18f1a6b5fe",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788026209508
+      },
+      "amountCents": 8,
+      "settlementTx": "0xc51eb8f78902dbd8a7fb898178583fa698acad69",
+      "payoutTo": "buyer",
+      "createdAt": 1788026209433,
+      "fundedAt": 1788026209434,
+      "settledAt": 1788026209508
+    },
+    {
+      "id": "TP-1047",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788026209432
+      },
+      "provider": null,
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_66a22646a60db427",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x0de543632f7473e4c20110c62824f033927270a9",
+        "nonce": "218d4282fc589dcd",
+        "resource": "/api/tasks/TP-1047",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788026509432
+      },
+      "payment": null,
+      "escrow": "AWAITING_PAYMENT",
+      "verification": null,
+      "receipt": null,
+      "amountCents": 8,
+      "settlementTx": null,
+      "payoutTo": null,
+      "createdAt": 1788026209432,
+      "fundedAt": null,
+      "settledAt": null
+    },
+    {
+      "id": "TP-1046",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788026170438
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) JS — correct and fast",
+        "language": "javascript",
+        "code": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim().split('\\n');\n\nfunction fib(n) {\n  let a = 0n, b = 1n;\n  for (let i = 0; i < n; i++) {\n    let t = a + b;\n    a = b;\n    b = t;\n  }\n  return a.toString();\n}\n\nfor (const line of input) {\n  if (!line.trim()) continue;\n  console.log(fib(parseInt(line, 10)));\n}",
+        "commitHash": "9525c949c9d9",
+        "producedAt": 1788026170440
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_bda79464a0422781",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x3cf8eccdb674c48a53e95ae4441626fee4faf954",
+        "nonce": "0b150ec6835e40c1",
+        "resource": "/api/tasks/TP-1046",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788026470438
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_bda79464a0422781",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0xd71e1142cec2be8accb487d9751bd6547092b877",
+          "to": "0x3cf8eccdb674c48a53e95ae4441626fee4faf954",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "0b150ec6835e40c1",
+          "validAfter": 1788026170439,
+          "validBefore": 1788026470438
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAVFB9OCIOXEs6bGsocUYFsTLuYp/UQEyUwjbJvqB27zA=\n-----END PUBLIC KEY-----\n",
+        "signature": "yd+C4OzUsuTCQt/aCkzu2G3twBN9z+8uGazzjjzC0ooxjBqNpan82k+nQIbcfniCJUWJIEu3s2+czldPdDWGAQ=="
+      },
+      "escrow": "LOCKED",
+      "verification": null,
+      "receipt": null,
+      "amountCents": 8,
+      "settlementTx": null,
+      "payoutTo": null,
+      "createdAt": 1788026170438,
+      "fundedAt": 1788026170440,
+      "settledAt": null
+    },
+    {
+      "id": "TP-1045",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788026170437
+      },
+      "provider": null,
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_8bf0a009c6c9eb42",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x3cf8eccdb674c48a53e95ae4441626fee4faf954",
+        "nonce": "c6c982eee56f0e3a",
+        "resource": "/api/tasks/TP-1045",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788026470437
+      },
+      "payment": null,
+      "escrow": "AWAITING_PAYMENT",
+      "verification": null,
+      "receipt": null,
+      "amountCents": 8,
+      "settlementTx": null,
+      "payoutTo": null,
+      "createdAt": 1788026170437,
+      "fundedAt": null,
+      "settledAt": null
+    },
+    {
+      "id": "TP-1044",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788025729032
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) CLI — correct and fast",
+        "code": "import sys\n\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n\nif __name__ == '__main__':\n    for line in sys.stdin:\n        n = int(line.strip())\n        print(fibonacci(n))",
+        "commitHash": "b6111a9c66b5",
+        "producedAt": 1788025730337
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_79f2865ec6af95e5",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x0fe7fea2f8d1f61726358ae34de62a9f23077b5d",
+        "nonce": "bf86753b610618ab",
+        "resource": "/api/tasks/TP-1044",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788026029040
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_79f2865ec6af95e5",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x5183d963a3b197dca9caea74d0cd21ac68788d30",
+          "to": "0x0fe7fea2f8d1f61726358ae34de62a9f23077b5d",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "bf86753b610618ab",
+          "validAfter": 1788025729740,
+          "validBefore": 1788026029040
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAd2DLXXvkPHma2LWFJAC2ONBwgAPnILEf3qxkXp2gHqM=\n-----END PUBLIC KEY-----\n",
+        "signature": "YcqaZv8wh70y6D+nDC3EQvsLo34zgoPWrRVoO71l7YVOLbb0JshsbK7OcDUVA4+93sJaktE/v890x0CjtfyzBQ=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788025731012,
+        "durationMs": 100,
+        "signature": "0x3045022046929e1e68737811e51d7e337a3710f85d12fa07363167931ad0bbf9e6336e43022100c85889f30239a53dc1d2631b075d4d04710bd3953f9da1a1a4733b05cbb6fe82"
+      },
+      "receipt": {
+        "settlementTx": "0x342f50b3d4e6c9009e827e79ca5c2f119b1807c6",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0x0fe7fea2f8d1f61726358ae34de62a9f23077b5d",
+        "to": "0x5183d963a3b197dca9caea74d0cd21ac68788d30",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788025731014
+      },
+      "amountCents": 8,
+      "settlementTx": "0x342f50b3d4e6c9009e827e79ca5c2f119b1807c6",
+      "payoutTo": "buyer",
+      "createdAt": 1788025729040,
+      "fundedAt": 1788025729751,
+      "settledAt": 1788025731014
+    },
+    {
+      "id": "TP-1043",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788025597633
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) CLI — correct and fast",
+        "code": "import sys\n\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n\nif __name__ == '__main__':\n    for line in sys.stdin:\n        n = int(line.strip())\n        print(fibonacci(n))",
+        "commitHash": "b6111a9c66b5",
+        "producedAt": 1788025598945
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_cda9e33bc14e449b",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x0fe7fea2f8d1f61726358ae34de62a9f23077b5d",
+        "nonce": "6f7a128b389f8971",
+        "resource": "/api/tasks/TP-1043",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788025897635
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_cda9e33bc14e449b",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x5183d963a3b197dca9caea74d0cd21ac68788d30",
+          "to": "0x0fe7fea2f8d1f61726358ae34de62a9f23077b5d",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "6f7a128b389f8971",
+          "validAfter": 1788025598356,
+          "validBefore": 1788025897635
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAd2DLXXvkPHma2LWFJAC2ONBwgAPnILEf3qxkXp2gHqM=\n-----END PUBLIC KEY-----\n",
+        "signature": "G3WUlesAb5LGC8EqH3ZFfLSzIp8vmAoTlTFd0s0KOo1VlRKPULUf5lkDKwp7K4ifBdd94BKSQcTleCV8zHqgCA=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788025599660,
+        "durationMs": 133,
+        "signature": "0x304502207d688a90926bc2cbc609ca60b86ea09ae2fd0238ffaeea0c98c7f7eb59c9c241022100f1578a8470b35c99cccfcda7600560098196575fc4ad9529be7e57cfe8404b77"
+      },
+      "receipt": {
+        "settlementTx": "0x795a20c695a19f397641844e3da3b3dab9d6c660",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0x0fe7fea2f8d1f61726358ae34de62a9f23077b5d",
+        "to": "0x5183d963a3b197dca9caea74d0cd21ac68788d30",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788025599664
+      },
+      "amountCents": 8,
+      "settlementTx": "0x795a20c695a19f397641844e3da3b3dab9d6c660",
+      "payoutTo": "buyer",
+      "createdAt": 1788025597635,
+      "fundedAt": 1788025598368,
+      "settledAt": 1788025599664
+    },
+    {
+      "id": "TP-1042",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (CLI)",
+        "task": "Write a CLI program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788022824368
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) CLI — correct and fast",
+        "code": "import sys\n\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n\nif __name__ == '__main__':\n    for line in sys.stdin:\n        n = int(line.strip())\n        print(fibonacci(n))",
+        "commitHash": "b6111a9c66b5",
+        "producedAt": 1788022825306
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_d92ba2bd644edfe3",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0x2969e1801ec92c8f595d869aa4ab6f85560d877e",
+        "nonce": "d2b5d044b7df5b54",
+        "resource": "/api/tasks/TP-1042",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788023124369
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_d92ba2bd644edfe3",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x63798f58d7426e53dd27f5f4af6476cfcd486ca9",
+          "to": "0x2969e1801ec92c8f595d869aa4ab6f85560d877e",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "d2b5d044b7df5b54",
+          "validAfter": 1788022824399,
+          "validBefore": 1788023124369
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAhpvrtZSDeo7EBVqhXf9NVD0UkBN3ZYR85wYrXc7wkQs=\n-----END PUBLIC KEY-----\n",
+        "signature": "wWO4Z+zyWja5JzHDHxFY09jm8Cd4bg63lTpJkt3xtoloc13AJjb2g83jPyb/9MFWCDxD5TQzDd/WMzBO9YtUAg=="
+      },
+      "escrow": "REFUNDED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "Failed to compile or crashed",
+            "status": "fail"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 0 / 5",
+            "status": "fail"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "0ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": false,
+        "testsPassed": 0,
+        "testsTotal": 5,
+        "p95Ms": 0,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": false,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788022825710,
+        "durationMs": 398,
+        "signature": "0x3045022100a59f6fdd71d49d0556ad328d7f0acff077aceea9d48403991a00a52bc4c900fc02204bb380a6f8fcd54bb54ec59d2381ebea3f2ca3b1e85b2395e33d2d099d9c081f"
+      },
+      "receipt": {
+        "settlementTx": "0x3fe2a26305d17ba369601d80a57b055ab8212da9",
+        "network": "base-sepolia (simulated)",
+        "direction": "buyer",
+        "amountCents": 8,
+        "from": "0x2969e1801ec92c8f595d869aa4ab6f85560d877e",
+        "to": "0x63798f58d7426e53dd27f5f4af6476cfcd486ca9",
+        "asset": "USDC",
+        "reason": "verification failed",
+        "settledAt": 1788022825716
+      },
+      "amountCents": 8,
+      "settlementTx": "0x3fe2a26305d17ba369601d80a57b055ab8212da9",
+      "payoutTo": "buyer",
+      "createdAt": 1788022824369,
+      "fundedAt": 1788022824421,
+      "settledAt": 1788022825716
+    }
+  ],
+  "balances": {
+    "escrowHeld": 8,
+    "providerEarned": 8,
+    "buyerRefunded": 160,
+    "grossVolume": 176
+  },
+  "counter": 1068,
+  "tollboothCount": 0,
+  "tollboothVolume": 0,
+  "usedPaymentIds": [
+    "pay_d92ba2bd644edfe3",
+    "pay_cda9e33bc14e449b",
+    "pay_79f2865ec6af95e5",
+    "pay_bda79464a0422781",
+    "pay_74073265f65199a9",
+    "pay_4cfcfefb010fa380",
+    "pay_a173b4e9c0788c8c",
+    "pay_a8ea5079bc96e83c",
+    "pay_4c1727f677818db8",
+    "pay_3c4eb83c291ee455",
+    "pay_f847764c0ba89f75",
+    "pay_a5993e02edf21f9e",
+    "pay_89a44389041c79fe",
+    "pay_f29d9e38ba72e7ca",
+    "pay_d53c800395efa43d",
+    "pay_4106b2499b7704a6",
+    "pay_9ded94bf3785ecc7",
+    "pay_a9e1952190520c35",
+    "pay_6e22a8d21bf9f59e",
+    "pay_f11623398ac9dad1",
+    "pay_b677e320687bc108",
+    "pay_8f2fe3b5609ec09b"
+  ]
+}

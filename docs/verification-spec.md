@@ -8,63 +8,98 @@ can't be checked by a machine, it can't gate a payment.
 
 ## Anatomy of a task spec
 
-A task spec (validated by `TaskSpecSchema` in `packages/core/src/spec.ts`) pairs
-a natural-language ask with a list of checks. **All checks must pass** — the
-predicate is their logical AND.
+A task spec is the `TaskSpec` type in `packages/core/src/types.ts`. It pairs a
+natural-language ask with a machine-checkable `acceptIf` condition and the data
+the verifier needs to decide it: the required function name, a list of test
+cases, and a latency probe. **All four checks must pass** — the predicate is
+their logical AND.
+
+The demo spec (authored in `packages/core/src/scenarios.ts`) looks like this:
 
 ```jsonc
 {
-  "id": "fibonacci-demo",
-  "task": "Write a Python function fib(n) that returns the n-th Fibonacci number.",
-  "acceptIf": [
-    { "kind": "compiles" },
-    { "kind": "tests_pass", "suite": "tests/", "minPassRatio": 1 },
-    { "kind": "latency", "metric": "p95", "ltMs": 50 },
-    { "kind": "schema_match", "schema": { "type": "integer", "minimum": 0 } }
+  "id": "spec_isprime_v1",
+  "title": "Primality check",
+  "task": "Implement isPrime(n): return true iff n is a prime number.",
+  "fn": "isPrime",
+  "language": "javascript",
+  "tests": [
+    { "input": [1],  "expected": false },
+    { "input": [2],  "expected": true  },
+    { "input": [17], "expected": true  },
+    { "input": [25], "expected": false }
+    // … 12 cases in total
   ],
-  "reward": { "amount": "0.25", "asset": "USDC", "network": "base-sepolia" }
+  "latencyProbe": { "input": [100000007], "iterations": 60 },
+  "acceptIf": {
+    "compiles": true,
+    "testsMustAllPass": true,
+    "p95BudgetMs": 50,
+    "schema": "boolean",
+    "humanExpr": "compiles && tests_pass && p95 < 50ms && schema_match"
+  },
+  "priceCents": 8
 }
 ```
 
-This is the deck's predicate — `compiles && tests_pass && p95 < 50ms && schema_match`
-— expressed as structured data instead of a string, so the verifier can execute
-it deterministically and report per-check detail.
+That's the deck's predicate — `compiles && tests_pass && p95 < 50ms && schema_match`
+— expressed as structured data, so the verifier can execute it deterministically
+and report per-check detail. The `humanExpr` string is only for display; the
+booleans and budgets above are what actually gate the money.
 
-## Check kinds
+The latency probe is a deliberately large prime (`100000007`). A √n
+implementation clears it in microseconds; a naive O(n) implementation must loop
+~10⁸ times and blows the budget — which is how the **slow** provider passes every
+unit test yet still gets refunded.
 
-| `kind` | Parameters | Passes when |
-| --- | --- | --- |
-| `compiles` | — | The submitted code compiles / type-checks (sandbox exit code `0`). |
-| `tests_pass` | `suite`, `minPassRatio` (0–1, default `1`) | The test suite runs and the pass ratio ≥ `minPassRatio`. |
-| `latency` | `metric` (`mean`\|`p95`\|`p99`), `ltMs` | The measured percentile over repeated sandbox runs is `< ltMs`. |
-| `schema_match` | `schema` (JSON Schema) | The output artifact validates against `schema`. |
-| `custom` | `name`, `params` | A named verifier plugin returns pass. Escape hatch for bespoke checks. |
+## The four checks
 
-Every check produces a `CheckResult` with a boolean `passed`, a human-readable
-`detail` (e.g. `"18/18"`, `"p95 = 31ms"`), and optional structured `metrics`
-for the ledger. The overall `VerificationResult.passed` is true only if every
-check passed.
+The verifier always runs the same four checks, in order. Each produces a `Check`
+(`{ id, label, detail, status }`) for the receipt; the ids are fixed in
+`packages/core/src/types.ts`.
+
+| `id` | Passes when |
+| --- | --- |
+| `compiles` | The submitted code loads and defines the required function (`spec.fn`). A syntax error or a missing function fails here, and every later check fails closed. |
+| `tests` | Every case in `spec.tests` returns a value deep-equal to `expected` (`testsPassed === testsTotal`). |
+| `latency` | The measured **p95** over `latencyProbe.iterations` runs is `≤ acceptIf.p95BudgetMs`, and the run was not time-capped. |
+| `schema` | `typeof output` equals `acceptIf.schema` (e.g. `"boolean"`) — a lightweight runtime type check on the return value. |
+
+The overall `VerificationResult.passed` is true only if the tests, latency, and
+schema checks all pass (each of which already requires `compiles`).
 
 ## Example verdict
 
+`verify(spec, output)` (in `apps/verifier/src/runner.ts`) returns a signed
+`VerificationResult`:
+
 ```jsonc
 {
-  "taskId": "fibonacci-demo",
-  "passed": true,
-  "results": [
-    { "check": "compiles",     "passed": true, "detail": "ok" },
-    { "check": "tests_pass",   "passed": true, "detail": "18/18" },
-    { "check": "latency",      "passed": true, "detail": "p95 = 31ms", "metrics": { "p95Ms": 31 } },
-    { "check": "schema_match", "passed": true, "detail": "match" }
+  "checks": [
+    { "id": "compiles", "label": "Code compiles",          "detail": "loaded",        "status": "pass" },
+    { "id": "tests",    "label": "Unit tests",             "detail": "12 / 12",       "status": "pass" },
+    { "id": "latency",  "label": "Latency p95 < 50ms",     "detail": "0.291ms ≤ 50ms","status": "pass" },
+    { "id": "schema",   "label": "Output schema",          "detail": "boolean = boolean", "status": "pass" }
   ],
-  "verifier": "tokenpact-verifier@local",
-  "signature": "0x…",
-  "verifiedAt": 1756000000000
+  "compiled": true,
+  "testsPassed": 12,
+  "testsTotal": 12,
+  "p95Ms": 0.291,
+  "p95BudgetMs": 50,
+  "schemaExpected": "boolean",
+  "schemaGot": "boolean",
+  "schemaMatch": true,
+  "timedOut": false,
+  "passed": true,
+  "verifier": "verifier.independent.agent",
+  "signature": "sig_…",
+  "ranAt": 1756000000000,
+  "durationMs": 42
 }
 ```
 
-`PASS` → escrow released to the provider. `FAIL` → escrow refunded to the buyer.
-No human reviewed either outcome.
+`passed: true` → escrow released to the provider. `passed: false` → escrow
+refunded to the paying wallet. No human reviewed either outcome.
 
 ## Design principles
 
@@ -72,15 +107,28 @@ No human reviewed either outcome.
    way every time. "Looks good" is not a check; "passes these 12 tests" is.
 2. **The spec is the contract.** The buyer commits to the predicate up front;
    the provider knows exactly what "done" means before starting.
-3. **Sandbox everything.** Provider output is untrusted code. Checks run under
-   hard time / memory / CPU limits with no network. See
+3. **Fail closed.** If the sandbox produces nothing usable — a crash, or a
+   timeout — every check is marked failed and the money is refunded, never
+   released on ambiguity.
+4. **Sandbox everything.** Provider output is untrusted code. It runs in a
+   separate child process with a hard wall-clock timeout (and a latency cap on
+   the probe loop). Enforced CPU/memory/network isolation is on the roadmap; see
    [`SECURITY.md`](../SECURITY.md).
-4. **Signed, auditable verdicts.** A verdict carries the verifier's identity and
-   a signature so the settlement — and any dispute — can be audited later.
+5. **Signed, auditable verdicts.** A verdict carries the verifier's identity and
+   a signature over the result, so the settlement — and any dispute — can be
+   audited later. The prototype uses a demo signing key; independent,
+   multi-verifier attestation is on the roadmap.
 
 ## Extending
 
-Add a new check by extending the discriminated union in
-`packages/core/src/spec.ts` and handling the new `kind` in the verifier's
-`runCheck` switch (`apps/verifier/src/index.ts`). The compiler will flag the
-missing case for you — the switch is exhaustively typed.
+The check set is intentionally small and fixed for the demo. To add a new check:
+
+1. Add its `id` to the `Check` union in `packages/core/src/types.ts` (and any new
+   fields it needs on `AcceptIf` / `VerificationResult`).
+2. Measure it in the sandbox harness (`apps/verifier/src/harness.ts`), which runs
+   the untrusted code and emits raw results.
+3. Fold it into the verdict in `apps/verifier/src/runner.ts` — push a `Check` and
+   include it in the `passed` conjunction.
+
+Because the `id` union is exhaustively typed, the compiler will point you at
+every place that needs updating.
