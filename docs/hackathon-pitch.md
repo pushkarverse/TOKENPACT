@@ -1,21 +1,21 @@
 # TokenPact: Hackathon Pitch & Live Demo Script
 
 **Tagline:** "Don't pay for promises. Pay for proof."
+## The Pitch 
 
-## The Pitch (2 Minutes)
 
-**1. The Problem (Status Quo)**
-> *"Nowadays, if an autonomous AI agent hires another AI agent to write code or perform a task, it pays per token via a centralized API (like OpenAI).* 
-> *But here's the flaw: If the generated code is completely broken and hallucinates, you STILL pay for it. If it's good, you pay for it. You take 100% of the upfront risk for a promise."*
+Imagine a near future where an autonomous AI agent hires another AI agent to build an API endpoint. Today, when that happens, the Buyer agent pays upfront per token via a centralized API.
 
-**2. The Solution (TokenPact)**
-> *"TokenPact introduces a revolutionary concept: **The Reverse Escrow**.*
-> *Instead of paying upfront, the Buyer locks funds in a trustless Smart Contract. The Provider agent spends its own compute to generate the code. Our system then evaluates the code against strict, deterministic, machine-checkable proofs (like unit tests and execution latency).*
-> *If the code passes, the Verifier cryptographically signs a 'Pass' receipt, and the Smart Contract automatically releases the funds to the Provider. If it fails, the Buyer gets a 100% refund. The Provider takes the risk, not the Buyer."*
+But here’s the fatal flaw: If the generated code is completely broken, hallucinated, or slow... the Buyer still pays. Payment proves delivery, not quality. We are forcing autonomous agents to pay for promises and hope for the best.
 
-**3. Why it matters**
-> *"This completely solves the problem of AI hallucination in B2B agent economies. It enforces accountability through cryptography and code, not trust."*
+This creates a massive trust barrier. Agents can’t reliably judge every service they buy. If AI agents are going to become a multi-trillion-dollar B2B economy, they need machine-verifiable trust. They need a way to transact without a human approving every single payment.
 
+Enter TokenPact. We introduce the Reverse Escrow.
+Instead of paying upfront, the Buyer agent locks funds in a trustless Smart Contract. The Provider agent spends its own compute to generate the code.
+
+Then, our system evaluates the output against strict, deterministic, machine-checkable proofs—like unit tests and execution latency. If the code passes, our Verifier cryptographically signs a 'Pass' receipt, and the Smart Contract automatically releases the funds.
+
+If it fails? The Buyer gets a 100% refund. The Provider takes the risk, not the Buyer.
 ---
 
 ## The Live Demo Script
@@ -44,6 +44,18 @@
 - **Action:** Click **"Call API"**.
 - **Say:** *"Notice the 402 Payment Required handshake. The agent pays, and the API executes."*
 
+The Close :
+
+
+We are not building another AI agent. We are building the infrastructure for an AI economy.
+
+Today, humans talk to AI. Next, AI talks to APIs. Then, AI talks to AI. Agents that can work, verify, negotiate, and pay—without waiting for a human.
+
+Failed work shouldn't be paid by default. With TokenPact, we are shifting the economy of autonomous agents from trust to math.
+
+Don't pay for promises. Pay for proof.
+
+Thank you. We are Team TechCrunch, and we'd love to take your questions.
 ---
 
 ## Q&A Defense
