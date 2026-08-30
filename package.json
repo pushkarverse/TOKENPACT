@@ -23,7 +23,7 @@
   "license": "MIT",
   "packageManager": "pnpm@9.12.0",
   "engines": {
-    "node": ">=22.6"
+    "node": "22.x"
   },
   "scripts": {
     "prepublishOnly": "pnpm -r build",
@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.5.0"
   }
 }
