@@ -24,14 +24,7 @@ const BOLD = "\x1b[1m";
 const RESET = "\x1b[0m";
 
 async function main() {
-  console.log(`${BLUE}${BOLD}
-  ██████╗ ██████╗ ██╗██████╗  ██████╗ 
-  ██╔══██╗██╔══██╗██║██╔══██╗██╔═══██╗
-  ██████╔╝██████╔╝██║██║  ██║██║   ██║
-  ██╔═══╝ ██╔══██╗██║██║  ██║██║   ██║
-  ██║     ██║  ██║██║██████╔╝╚██████╔╝
-  ╚═╝     ╚═╝  ╚═╝╚═╝╚═════╝  ╚═════╝ 
-  [ INTENT PLANE · BUYER AGENT ]${RESET}\n`);
+  console.log(`${BLUE}${BOLD}[ INTENT PLANE · BUYER AGENT ]${RESET}\n`);
 
   const buyer = loadBuyerWallet();
   console.log(`${DIM}▶${RESET} Loaded Wallet: ${YELLOW}${buyer.address}${RESET}`);
