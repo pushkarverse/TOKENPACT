@@ -66,6 +66,19 @@ async function boot() {
 
   $("run").addEventListener("click", runPact);
   $("peek").addEventListener("click", toggleCode);
+  const clearBtn = $("clear-ledger");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", async () => {
+      try {
+        const res = await jpost("/api/reset");
+        state.ledger = res.ledger || [];
+        renderLedger(state.ledger, null);
+        renderTally(res.stats);
+      } catch (err) {
+        console.error("Failed to reset ledger:", err);
+      }
+    });
+  }
 }
 
 function renderSpec(spec) {
@@ -525,7 +538,40 @@ function setupTabs() {
   }
 }
 
+function initVaultLight() {
+  if (REDUCED) return;
+  if (!window.matchMedia("(pointer: fine)").matches) return;
+
+  const root = document.documentElement;
+  let tx = 0, ty = 0;   // target offset from viewport centre
+  let x = 0, y = 0;     // eased current offset
+  let raf = null;
+
+  function frame() {
+    x += (tx - x) * 0.12;
+    y += (ty - y) * 0.12;
+    root.style.setProperty("--mx-off", x.toFixed(1) + "px");
+    root.style.setProperty("--my-off", y.toFixed(1) + "px");
+    if (Math.abs(tx - x) > 0.4 || Math.abs(ty - y) > 0.4) {
+      raf = requestAnimationFrame(frame);
+    } else {
+      raf = null;
+    }
+  }
+
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      tx = e.clientX - window.innerWidth / 2;
+      ty = e.clientY - window.innerHeight / 2;
+      if (raf === null) raf = requestAnimationFrame(frame);
+    },
+    { passive: true }
+  );
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   boot();
   setupTabs();
+  initVaultLight();
 });

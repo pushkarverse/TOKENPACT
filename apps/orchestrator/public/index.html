@@ -216,9 +216,12 @@
 
     <section class="col-ledger">
       <article class="card card-ledger">
-        <div class="card-head">
-          <span class="eyebrow">Settlement ledger · settlement plane</span>
-          <span class="ledger-note">every outcome, signed and recorded</span>
+        <div class="card-head" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span class="eyebrow">Settlement ledger · settlement plane</span>
+            <span class="ledger-note">every outcome, signed and recorded</span>
+          </div>
+          <button id="clear-ledger" type="button" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #888; font-size: 11px; padding: 2px 8px; border-radius: 4px; cursor: pointer;">Clear</button>
         </div>
         <div class="ledger" id="ledger">
           <div class="ledger-empty" id="ledger-empty">No pacts settled yet — run one to write the first line.</div>

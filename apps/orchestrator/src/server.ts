@@ -9,6 +9,7 @@ import {
   runVerification,
   getTx,
   getLedger,
+  resetLedger,
   stats,
 } from "./store.js";
 import { ADDRESSES } from "./x402.js";
@@ -85,6 +86,11 @@ const server = createServer(async (req, res) => {
         ledger: getLedger(),
         stats: stats(),
       });
+    }
+
+    if (path === "/api/reset" && method === "POST") {
+      resetLedger();
+      return sendJson(res, 200, { ok: true, ledger: getLedger(), stats: stats() });
     }
 
     if (path === "/api/tasks" && method === "POST") {
