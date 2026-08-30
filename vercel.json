@@ -1,3 +1,9 @@
 {
-  "outputDirectory": "apps/orchestrator/public"
+  "outputDirectory": "apps/orchestrator/public",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    }
+  ]
 }
