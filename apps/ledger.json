@@ -1,0 +1,157 @@
+{
+  "transactions": [
+    {
+      "id": "TP-1042",
+      "spec": {
+        "id": "spec_fibonacci_v1",
+        "title": "Fibonacci Sequence (Algorithm)",
+        "task": "Write a program that reads an integer from stdin and prints the corresponding Fibonacci number to stdout.",
+        "language": "python",
+        "tests": [
+          {
+            "input": "0\n",
+            "expected": "0\n"
+          },
+          {
+            "input": "1\n",
+            "expected": "1\n"
+          },
+          {
+            "input": "5\n",
+            "expected": "5\n"
+          },
+          {
+            "input": "10\n",
+            "expected": "55\n"
+          },
+          {
+            "input": "15\n",
+            "expected": "610\n"
+          }
+        ],
+        "acceptIf": {
+          "compiles": true,
+          "testsMustAllPass": true,
+          "p95BudgetMs": 500,
+          "schema": "string",
+          "humanExpr": "compiles && tests_pass && p95 < 500ms && schema_match"
+        },
+        "priceCents": 8,
+        "createdAt": 1788110392132
+      },
+      "provider": {
+        "provider": "provider.honest.agent",
+        "scenario": "honest",
+        "headline": "Iterative O(n) JS — correct and fast",
+        "language": "javascript",
+        "code": "const fs = require('fs');\nconst input = fs.readFileSync(0, 'utf-8').trim().split('\\n');\n\nfunction fib(n) {\n  let a = 0n, b = 1n;\n  for (let i = 0; i < n; i++) {\n    let t = a + b;\n    a = b;\n    b = t;\n  }\n  return a.toString();\n}\n\nfor (const line of input) {\n  if (!line.trim()) continue;\n  console.log(fib(parseInt(line, 10)));\n}",
+        "commitHash": "9525c949c9d9",
+        "producedAt": 1788110393156
+      },
+      "offer": {
+        "status": 402,
+        "x402Version": 1,
+        "paymentId": "pay_b75bc57865ac3762",
+        "scheme": "exact",
+        "amountCents": 8,
+        "asset": "USDC",
+        "network": "base-sepolia (simulated)",
+        "payTo": "0xbabcba70b5f5303b9e3bd120afdad6d1209a4d25",
+        "nonce": "1966014f9f4c9c7a",
+        "resource": "/api/tasks/TP-1042",
+        "description": "Quality-gated escrow payment",
+        "validUntil": 1788110692133
+      },
+      "payment": {
+        "x402Version": 1,
+        "paymentId": "pay_b75bc57865ac3762",
+        "scheme": "exact",
+        "network": "base-sepolia (simulated)",
+        "authorization": {
+          "from": "0x126d80f6410f1ec9ebb3111eb61097cb225d363d",
+          "to": "0xbabcba70b5f5303b9e3bd120afdad6d1209a4d25",
+          "valueCents": 8,
+          "asset": "USDC",
+          "network": "base-sepolia (simulated)",
+          "nonce": "1966014f9f4c9c7a",
+          "validAfter": 1788110392145,
+          "validBefore": 1788110692133
+        },
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAcGJazDZvEr5ycN0dgglX6WzK/VcRsKB+fa8TE1cAqqk=\n-----END PUBLIC KEY-----\n",
+        "signature": "tzsKI/LXCG5sSTuyzUnRZSrYcom1q5jf9f8j1HnU7bRqfrFIv42c7uRxQx0SBqHDsnYRh6U1t4PmpDnlQkbNDQ=="
+      },
+      "escrow": "RELEASED",
+      "verification": {
+        "checks": [
+          {
+            "id": "compiles",
+            "label": "Syntax & Compilation",
+            "detail": "OK",
+            "status": "pass"
+          },
+          {
+            "id": "tests",
+            "label": "Unit Tests",
+            "detail": "Passed 5 / 5",
+            "status": "pass"
+          },
+          {
+            "id": "latency",
+            "label": "p95 Latency",
+            "detail": "10ms (budget: 500ms)",
+            "status": "pass"
+          },
+          {
+            "id": "schema",
+            "label": "Schema Match",
+            "detail": "Expected string (stdout), got string",
+            "status": "pass"
+          }
+        ],
+        "compiled": true,
+        "testsPassed": 5,
+        "testsTotal": 5,
+        "p95Ms": 10,
+        "p95BudgetMs": 500,
+        "schemaExpected": "string",
+        "schemaGot": "string",
+        "schemaMatch": true,
+        "timedOut": false,
+        "passed": true,
+        "verifier": "verifier.cloud.agent",
+        "ranAt": 1788110393464,
+        "durationMs": 297,
+        "signature": "0x30450221009decdbfb68590775d3fd7e0efaca339edd8bde4f9107c846a600b0b8cde3c6bc02207e1fe5914437ccabe961177e8d4e57adaeb7373c68bd2fc05ed2dac1dc346205"
+      },
+      "receipt": {
+        "settlementTx": "0x4c2c59be22699c3d4bc8dd00f500e331b56c9b03",
+        "network": "base-sepolia (simulated)",
+        "direction": "provider",
+        "amountCents": 8,
+        "from": "0xbabcba70b5f5303b9e3bd120afdad6d1209a4d25",
+        "to": "0x7be9a33fd5081824bdcde852d3e3100d6c5771c3",
+        "asset": "USDC",
+        "reason": "verification passed",
+        "settledAt": 1788110393468
+      },
+      "amountCents": 8,
+      "settlementTx": "0x4c2c59be22699c3d4bc8dd00f500e331b56c9b03",
+      "payoutTo": "provider",
+      "createdAt": 1788110392133,
+      "fundedAt": 1788110392157,
+      "settledAt": 1788110393468
+    }
+  ],
+  "balances": {
+    "escrowHeld": 0,
+    "providerEarned": 8,
+    "buyerRefunded": 0,
+    "grossVolume": 8
+  },
+  "counter": 1042,
+  "tollboothCount": 0,
+  "tollboothVolume": 0,
+  "usedPaymentIds": [
+    "pay_b75bc57865ac3762"
+  ]
+}
