@@ -2,6 +2,7 @@
   "name": "@tokenpact/cli",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Reverse escrow + quality-gated settlement for autonomous AI agents, built on x402. Don't pay for promises — pay for proof.",
   "bin": {
     "tokenpact": "./bin/tokenpact.js"

@@ -2,12 +2,6 @@ import type { Transaction, ProviderScenario, Balances, PaymentPayload } from "@t
 import { buildSpec, produce } from "@tokenpact/core";
 import { verify } from "@tokenpact/verifier";
 import { makeOffer, verifyIncomingPayment, settleTransaction, ADDRESSES } from "./x402.js";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const LEDGER_PATH = path.join(__dirname, "../../../ledger.json");
 
 let transactions: Transaction[] = [];
 let usedPaymentIds = new Set<string>();
@@ -16,38 +10,6 @@ let counter = 1041;
 let tollboothCount = 0;
 let tollboothVolume = 0;
 
-function loadLedger() {
-  try {
-    if (fs.existsSync(LEDGER_PATH)) {
-      const data = JSON.parse(fs.readFileSync(LEDGER_PATH, "utf-8"));
-      transactions = data.transactions || [];
-      balances = data.balances || { escrowHeld: 0, providerEarned: 0, buyerRefunded: 0, grossVolume: 0 };
-      counter = data.counter || 1041;
-      tollboothCount = data.tollboothCount || 0;
-      tollboothVolume = data.tollboothVolume || 0;
-      usedPaymentIds = new Set(data.usedPaymentIds || []);
-    }
-  } catch (err) {
-    console.error("Failed to load ledger DB:", err);
-  }
-}
-
-function saveLedger() {
-  try {
-    fs.writeFileSync(LEDGER_PATH, JSON.stringify({
-      transactions,
-      balances,
-      counter,
-      tollboothCount,
-      tollboothVolume,
-      usedPaymentIds: Array.from(usedPaymentIds)
-    }, null, 2));
-  } catch (err) {
-    console.error("Failed to save ledger DB:", err);
-  }
-}
-loadLedger();
-
 export function resetLedger() {
   transactions = [];
   usedPaymentIds.clear();
@@ -55,9 +17,6 @@ export function resetLedger() {
   counter = 1041;
   tollboothCount = 0;
   tollboothVolume = 0;
-  if (fs.existsSync(LEDGER_PATH)) {
-    fs.unlinkSync(LEDGER_PATH);
-  }
 }
 
 export function createTask(): Transaction {
@@ -81,7 +40,6 @@ export function createTask(): Transaction {
     settledAt: null,
   };
   transactions.unshift(tx);
-  saveLedger();
   return tx;
 }
 
@@ -105,7 +63,6 @@ export function fundEscrow(txId: string, source: string | PaymentPayload | null 
   tx.fundedAt = Date.now();
   balances.escrowHeld += tx.amountCents;
   balances.grossVolume += tx.amountCents;
-  saveLedger();
   return tx;
 }
 
@@ -117,7 +74,6 @@ export function attachProvider(txId: string, scenario: ProviderScenario): Transa
   }
   if (tx.escrow !== "LOCKED") throw new Error(`transaction ${txId} is already settled`);
   tx.provider = produce(scenario);
-  saveLedger();
   return tx;
 }
 
@@ -151,7 +107,6 @@ export async function runVerification(txId: string): Promise<Transaction> {
   if (result.passed) balances.providerEarned += tx.amountCents;
   else balances.buyerRefunded += tx.amountCents;
 
-  saveLedger();
   return tx;
 }
 
@@ -203,7 +158,6 @@ export function processTollboothPayment(source: string | PaymentPayload | null) 
   usedPaymentIds.add(result.payment.paymentId);
   tollboothVolume += offer.amountCents;
   tollboothCount += 1;
-  saveLedger();
 
   return {
     payment: result.payment,

@@ -12,7 +12,7 @@ const command = args[0] || "all";
 
 function runService(name, color, scriptPath) {
   console.log(`\x1b[${color}m▶ Starting ${name}...\x1b[0m`);
-  const child = spawn("node", ["--import", "./tools/ts-run.mjs", scriptPath], {
+  const child = spawn(process.execPath, ["--import", "./tools/ts-run.mjs", scriptPath], {
     cwd: ROOT,
     stdio: "pipe",
   });
