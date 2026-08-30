@@ -1,0 +1,6 @@
+# .npmignore
+.github
+.env
+.env.example
+docs/
+tests/
