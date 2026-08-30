@@ -1,6 +1,6 @@
 {
   "name": "tokenpact-cli",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/pushkarverse/TOKENPACT.git"
@@ -8,7 +8,7 @@
   "type": "module",
   "description": "Reverse escrow + quality-gated settlement for autonomous AI agents, built on x402. Don't pay for promises — pay for proof.",
   "bin": {
-    "tokenpact": "./bin/tokenpact.js"
+    "tokenpact": "bin/tokenpact.js"
   },
   "keywords": [
     "x402",

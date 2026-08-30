@@ -36,14 +36,7 @@ const BOLD = "\x1b[1m";
 const RESET = "\x1b[0m";
 
 async function main() {
-  console.log(`${GREEN}${BOLD}
-  ██████╗ ██████╗ ██████╗ ██╗   ██╗
-  ██╔══██╗██╔══██╗██╔══██╗██║   ██║
-  ██████╔╝██████╔╝██║  ██║██║   ██║
-  ██╔═══╝ ██╔══██╗██║  ██║╚██╗ ██╔╝
-  ██║     ██║  ██║██████╔╝ ╚████╔╝ 
-  ╚═╝     ╚═╝  ╚═╝╚═════╝   ╚═══╝  
-  [ EXECUTION PLANE · PROVIDER ]${RESET}\n`);
+  console.log(`${GREEN}${BOLD}[ EXECUTION PLANE · PROVIDER ]${RESET}\n`);
   const scenario = pickScenario();
   const taskId = process.argv[2] && !process.argv[2].startsWith("-") ? process.argv[2] : await discoverOpenTask();
   if (!taskId) {

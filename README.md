@@ -325,13 +325,13 @@ Only `ORCHESTRATOR_PORT` affects the demo today.
 - [x] Persistent JSON Transaction Ledger with UI Visualizer
 - [x] **Metered access** — API Tollbooth with x402 micropayments
 - [x] End-to-end demo: browser dashboard, premium ASCII CLI agents, and an asserting smoke run
-
 - [x] Smart Contract Prototype (`TokenPactEscrow.sol`) for on-chain proof
 
 **Future Roadmap**
 
 - Live x402 settlement — deploying the contract to Base Sepolia
 - Multiple independent verifiers over the signed attestations (quorum / staking)
+- Global `tokenpact-cli` distribution — decentralised node runner and plugin system for autonomous agents
 
 ### Second surface — the tollbooth
 

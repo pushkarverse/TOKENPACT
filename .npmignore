@@ -1,0 +1,29 @@
+# Ignore local environment
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+wallet.json
+ledger.json
+
+# Ignore tests and local state
+data/
+*.sqlite
+*.sqlite3
+tmp/
+.tmp/
+logs/
+*.log
+
+# Ignore source files and TypeScript-specific files
+# to keep the package small since it's already compiled!
+packages/*/src/
+apps/*/src/
+agents/*/src/
+apps/*/scripts/
+*.ts
+!*.d.ts
+
+# Ensure dist/ (compiled output) is NOT ignored!
+!dist/
