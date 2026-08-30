@@ -227,7 +227,7 @@ tokenpact provider honest
 With our **Global CLI**, starting the entire ecosystem is just one command away:
 
 ```bash
-npm install -g @tokenpact/cli
+npm install -g tokenpact-cli
 
 tokenpact
 ```

@@ -12,7 +12,7 @@ const command = args[0] || "all";
 
 function runService(name, color, scriptPath) {
   console.log(`\x1b[${color}m▶ Starting ${name}...\x1b[0m`);
-  const child = spawn("node", ["--import", "./tools/ts-run.mjs", scriptPath], {
+  const child = spawn("node", ["--import", "./tools/prod-resolve.mjs", scriptPath], {
     cwd: ROOT,
     stdio: "pipe",
   });
@@ -37,20 +37,20 @@ function runService(name, color, scriptPath) {
 }
 
 if (command === "server" || command === "orchestrator") {
-  runService("ORCHESTRATOR", "36", "apps/orchestrator/src/server.ts");
+  runService("ORCHESTRATOR", "36", "apps/orchestrator/dist/src/server.js");
 } else if (command === "buyer") {
-  runService("BUYER_AGENT", "35", "agents/buyer/src/index.ts");
+  runService("BUYER_AGENT", "35", "agents/buyer/dist/index.js");
 } else if (command === "provider") {
-  runService("PROVIDER_AGENT", "32", "agents/provider/src/index.ts");
+  runService("PROVIDER_AGENT", "32", "agents/provider/dist/index.js");
 } else if (command === "all") {
   console.log("\x1b[1m\x1b[33mStarting TokenPact Ecosystem (Orchestrator + Buyer + Provider)...\x1b[0m\n");
-  runService("ORCHESTRATOR", "36", "apps/orchestrator/src/server.ts");
+  runService("ORCHESTRATOR", "36", "apps/orchestrator/dist/src/server.js");
   
   // Stagger agent startup to give server time to boot
-  setTimeout(() => runService("PROVIDER_AGENT", "32", "agents/provider/src/index.ts"), 2000);
-  setTimeout(() => runService("BUYER_AGENT", "35", "agents/buyer/src/index.ts"), 4000);
+  setTimeout(() => runService("PROVIDER_AGENT", "32", "agents/provider/dist/index.js"), 2000);
+  setTimeout(() => runService("BUYER_AGENT", "35", "agents/buyer/dist/index.js"), 4000);
 } else if (command === "smoke") {
-  runService("SMOKE_TEST", "33", "apps/orchestrator/scripts/smoke.ts");
+  runService("SMOKE_TEST", "33", "apps/orchestrator/dist/scripts/smoke.js");
 } else {
   console.log(`
 \x1b[1mTokenPact CLI\x1b[0m
