@@ -71,7 +71,7 @@ async function serveStatic(res: any, urlPath: string) {
   }
 }
 
-const server = createServer(async (req, res) => {
+export default async function handler(req: any, res: any) {
   const method = req.method || "GET";
   const url = new URL(req.url || "/", `http://localhost:${PORT}`);
   const path = url.pathname;
@@ -221,18 +221,22 @@ const server = createServer(async (req, res) => {
   } catch (err: any) {
     return sendJson(res, 500, { error: String(err && err.message ? err.message : err) });
   }
-});
+}
 
-server.listen(PORT, () => {
-  console.log(`\x1b[36m
-  ████████╗ ██████╗ ██╗  ██╗███████╗███╗   ██╗██████╗  █████╗  ██████╗████████╗
-  ╚══██╔══╝██╔═══██╗██║ ██╔╝██╔════╝████╗  ██║██╔══██╗██╔══██╗██╔════╝╚══██╔══╝
-     ██║   ██║   ██║█████╔╝ █████╗  ██╔██╗ ██║██████╔╝███████║██║        ██║   
-     ██║   ██║   ██║██╔═██╗ ██╔══╝  ██║╚██╗██║██╔═══╝ ██╔══██║██║        ██║   
-     ██║   ╚██████╔╝██║  ██╗███████╗██║ ╚████║██║     ██║  ██║╚██████╗   ██║   
-     ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═╝     ╚═╝  ╚═╝ ╚═════╝   ╚═╝   
-  \x1b[0m`);
-  console.log(`  \x1b[1mTokenPact\x1b[0m  ·  reverse escrow for AI agents`);
-  console.log(`  escrow account →  \x1b[33m${ADDRESSES.escrow}\x1b[0m`);
-  console.log(`  running        →  \x1b[32mhttp://localhost:${PORT}\x1b[0m\n`);
-});
+const server = createServer(handler);
+
+if (process.env.NODE_ENV !== "production" || process.env.RUN_LOCAL) {
+  server.listen(PORT, () => {
+    console.log(`\x1b[36m
+    ████████╗ ██████╗ ██╗  ██╗███████╗███╗   ██╗██████╗  █████╗  ██████╗████████╗
+    ╚══██╔══╝██╔═══██╗██║ ██╔╝██╔════╝████╗  ██║██╔══██╗██╔══██╗██╔════╝╚══██╔══╝
+       ██║   ██║   ██║█████╔╝ █████╗  ██╔██╗ ██║██████╔╝███████║██║        ██║   
+       ██║   ██║   ██║██╔═██╗ ██╔══╝  ██║╚██╗██║██╔═══╝ ██╔══██║██║        ██║   
+       ██║   ╚██████╔╝██║  ██╗███████╗██║ ╚████║██║     ██║  ██║╚██████╗   ██║   
+       ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═╝     ╚═╝  ╚═╝ ╚═════╝   ╚═╝   
+    \x1b[0m`);
+    console.log(`  \x1b[1mTokenPact\x1b[0m  ·  reverse escrow for AI agents`);
+    console.log(`  escrow account →  \x1b[33m${ADDRESSES.escrow}\x1b[0m`);
+    console.log(`  running        →  \x1b[32mhttp://localhost:${PORT}\x1b[0m\n`);
+  });
+}
